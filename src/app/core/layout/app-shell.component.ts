@@ -21,7 +21,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
       </header>
 
       <main class="shell__content">
-        <router-outlet />
+        <router-outlet></router-outlet>
       </main>
     </div>
   `,

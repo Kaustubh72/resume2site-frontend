@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PublicProfileSectionComponent } from '../../shared/components/public-profile-section/public-profile-section.component';
 
@@ -26,7 +26,7 @@ import { PublicProfileSectionComponent } from '../../shared/components/public-pr
   styles: [`.public-page { display: grid; gap: 1.5rem; } .hero h1, .hero p { margin: 0; } .hero p { color: var(--text-muted); margin-top: 0.5rem; }`]
 })
 export class PublicProfilePageComponent {
-  slug = this.route.snapshot.paramMap.get('slug') ?? 'demo-user';
+  private readonly route = inject(ActivatedRoute);
 
-  constructor(private readonly route: ActivatedRoute) {}
+  protected readonly slug = this.route.snapshot.paramMap.get('slug') ?? 'demo-user';
 }

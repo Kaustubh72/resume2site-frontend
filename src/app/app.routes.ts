@@ -11,15 +11,15 @@ export const appRoutes: Routes = [
     loadComponent: () => import('./features/upload/upload-page.component').then((m) => m.UploadPageComponent)
   },
   {
-    path: 'draft/:draftId',
+    path: 'draft/:profileId',
     loadComponent: () => import('./features/draft-editor/draft-editor-page.component').then((m) => m.DraftEditorPageComponent)
   },
   {
-    path: 'templates/:draftId',
+    path: 'templates/:profileId',
     loadComponent: () => import('./features/templates/template-gallery-page.component').then((m) => m.TemplateGalleryPageComponent)
   },
   {
-    path: 'templates/:draftId/preview/:templateId',
+    path: 'templates/:profileId/preview/:templateId',
     loadComponent: () => import('./features/templates/template-preview-page.component').then((m) => m.TemplatePreviewPageComponent)
   },
   {
@@ -27,7 +27,7 @@ export const appRoutes: Routes = [
     loadComponent: () => import('./features/auth/auth-page.component').then((m) => m.AuthPageComponent)
   },
   {
-    path: 'publish/:draftId',
+    path: 'publish/:profileId',
     loadComponent: () => import('./features/publish/publish-page.component').then((m) => m.PublishPageComponent)
   },
   {
