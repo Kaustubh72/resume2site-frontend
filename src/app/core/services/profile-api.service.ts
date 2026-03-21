@@ -3,7 +3,6 @@ import { Observable, of, switchMap } from 'rxjs';
 import { ApiService } from './api.service';
 import {
   DraftProfile,
-  PublishRequest,
   ResumeParseResponse,
   ResumeUploadResponse,
   TemplateDefinition
@@ -69,12 +68,12 @@ export class ProfileApiService {
     ]);
   }
 
-  checkSlugAvailability(slug: string): Observable<{ available: boolean }> {
-    return this.api.get<{ available: boolean }>(`/publish/slug-availability?slug=${encodeURIComponent(slug)}`);
+  checkSlugAvailability(slug: string): Observable<{ available: boolean; suggestions?: string[] }> {
+    return this.api.get<{ available: boolean; suggestions?: string[] }>(`/slugs/check?slug=${encodeURIComponent(slug)}`);
   }
 
-  publishPortfolio(payload: PublishRequest): Observable<{ slug: string }> {
-    return this.api.post<{ slug: string }>('/publish', payload);
+  publishPortfolio(profileId: string, payload: { slug: string }): Observable<{ slug: string; publicUrl?: string }> {
+    return this.api.post<{ slug: string; publicUrl?: string }>(`/profiles/${profileId}/publish`, payload);
   }
 
   getPublicProfile(slug: string): Observable<DraftProfile> {
