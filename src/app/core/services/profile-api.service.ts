@@ -32,6 +32,10 @@ export class ProfileApiService {
     return this.api.get<DraftProfile>(`/drafts/${profileId}`);
   }
 
+  getDashboardProfiles(): Observable<DraftProfile[]> {
+    return this.api.get<DraftProfile[]>('/profiles');
+  }
+
   updateDraft(profileId: string, payload: Partial<DraftProfile>): Observable<DraftProfile> {
     return this.api.patch<DraftProfile>(`/drafts/${profileId}`, payload);
   }
