@@ -85,7 +85,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
         </article>
         <article class="card section-shell">
           <h3>3. Publish when ready</h3>
-          <p>Choose a slug and publish under a public `/u/:slug` route.</p>
+          <p>Choose a slug and publish under a public <code>/u/:slug</code> route.</p>
         </article>
       </section>
     </section>
