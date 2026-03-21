@@ -44,21 +44,27 @@ export class ProfileApiService {
         name: 'Classic',
         description: 'Balanced layout for freshers and early-career developers.',
         audience: 'Students & generalist developers',
-        accentLabel: 'Professional'
+        accentLabel: 'Professional',
+        thumbnailLabel: 'Professional hero + sidebar',
+        highlights: ['Balanced summary and experience', 'Strong default for resumes', 'Works well for mixed backgrounds']
       },
       {
         id: 'minimal',
         name: 'Minimal',
         description: 'Clean, content-first presentation with quick scanning.',
         audience: 'Software engineers',
-        accentLabel: 'Minimal'
+        accentLabel: 'Minimal',
+        thumbnailLabel: 'Editorial and content-first',
+        highlights: ['High readability', 'Compact layout', 'Clean mobile preview']
       },
       {
         id: 'spotlight',
         name: 'Spotlight',
         description: 'Project-forward layout that emphasizes work samples and skills.',
         audience: 'Developers with portfolio projects',
-        accentLabel: 'Project-led'
+        accentLabel: 'Project-led',
+        thumbnailLabel: 'Featured projects first',
+        highlights: ['Project-heavy hero', 'Distinct visual style', 'Built for portfolio-first candidates']
       }
     ]);
   }

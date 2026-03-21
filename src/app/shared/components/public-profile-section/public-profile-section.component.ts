@@ -13,8 +13,8 @@ import { Component, Input } from '@angular/core';
     </section>
   `,
   styles: [`
-    .public-section { display: grid; gap: 1rem; }
-    h2, p { margin: 0; }
+    .public-section { display: grid; gap: 1rem; color: inherit; }
+    h2, p { margin: 0; color: inherit; }
     p { color: var(--text-muted); }
   `]
 })

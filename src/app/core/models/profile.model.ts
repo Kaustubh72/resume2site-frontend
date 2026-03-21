@@ -84,6 +84,8 @@ export interface TemplateDefinition {
   description: string;
   audience: string;
   accentLabel: string;
+  thumbnailLabel?: string;
+  highlights?: string[];
 }
 
 export interface PublishRequest {
