@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, switchMap } from 'rxjs';
 import { ApiService } from './api.service';
+import { API_ROUTES } from '../config/api-routes';
 import {
   DraftProfile,
   ResumeParseResponse,
@@ -14,30 +15,43 @@ export class ProfileApiService {
 
   uploadResume(file: File): Observable<ResumeUploadResponse> {
     const formData = new FormData();
-    formData.append('resume', file);
-    return this.api.post<ResumeUploadResponse>('/resumes/upload', formData);
+    formData.append('file', file);
+    return this.api.post<ResumeUploadResponse>(API_ROUTES.resume.upload, formData);
   }
 
   parseResume(resumeUploadId: string): Observable<ResumeParseResponse> {
-    return this.api.post<ResumeParseResponse>(`/resumes/${resumeUploadId}/parse`, {});
+    return this.api.post<ResumeParseResponse>(API_ROUTES.resume.parse(resumeUploadId), {});
   }
 
   uploadAndParseResume(file: File): Observable<ResumeParseResponse> {
     return this.uploadResume(file).pipe(
-      switchMap(({ resumeUploadId }) => this.parseResume(resumeUploadId))
+      switchMap((uploadResponse) => {
+        const typed = uploadResponse as ResumeUploadResponse;
+        const resumeUploadId =
+          typed.resumeUploadId ||
+          typed.data?.id?.toString() ||
+          ((uploadResponse as unknown as { id?: string }).id ?? '');
+
+        if (!resumeUploadId) {
+          throw new Error('uploadAndParseResume: resumeUploadId is missing in /resumes/upload response');
+        }
+
+        return this.parseResume(resumeUploadId);
+      })
     );
   }
 
   getDraft(profileId: string): Observable<DraftProfile> {
-    return this.api.get<DraftProfile>(`/drafts/${profileId}`);
+    return this.api.get<DraftProfile>(API_ROUTES.profile.get(profileId));
   }
 
   getDashboardProfiles(): Observable<DraftProfile[]> {
-    return this.api.get<DraftProfile[]>('/profiles');
+    return this.api.get<DraftProfile[]>(API_ROUTES.profile.list);
   }
 
   updateDraft(profileId: string, payload: Partial<DraftProfile>): Observable<DraftProfile> {
-    return this.api.patch<DraftProfile>(`/drafts/${profileId}`, payload);
+    // backend API currently uses PUT /api/profiles/{profileId}; patch preserved for partial updates in future
+    return this.api.patch<DraftProfile>(API_ROUTES.profile.update(profileId), payload);
   }
 
   getTemplates(): Observable<TemplateDefinition[]> {
@@ -73,14 +87,18 @@ export class ProfileApiService {
   }
 
   checkSlugAvailability(slug: string): Observable<{ available: boolean; suggestions?: string[] }> {
-    return this.api.get<{ available: boolean; suggestions?: string[] }>(`/slugs/check?slug=${encodeURIComponent(slug)}`);
+    return this.api.get<{ available: boolean; suggestions?: string[] }>(`${API_ROUTES.slug.check}?value=${encodeURIComponent(slug)}`);
   }
 
   publishPortfolio(profileId: string, payload: { slug: string }): Observable<{ slug: string; publicUrl?: string }> {
-    return this.api.post<{ slug: string; publicUrl?: string }>(`/profiles/${profileId}/publish`, payload);
+    return this.api.post<{ slug: string; publicUrl?: string }>(API_ROUTES.profile.publish(profileId), payload);
+  }
+
+  republishPortfolio(profileId: string, payload: { slug: string }): Observable<{ slug: string; publicUrl?: string }> {
+    return this.api.post<{ slug: string; publicUrl?: string }>(API_ROUTES.profile.republish(profileId), payload);
   }
 
   getPublicProfile(slug: string): Observable<DraftProfile> {
-    return this.api.get<DraftProfile>(`/public/${slug}`);
+    return this.api.get<DraftProfile>(API_ROUTES.public.profileBySlug(slug));
   }
 }

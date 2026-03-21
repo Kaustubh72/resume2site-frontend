@@ -48,8 +48,17 @@ export interface ProfileSectionState<T> {
   isDirty?: boolean;
 }
 
+export interface ResumeUploadData {
+  id: number;
+  originalFileName: string;
+  contentType: string;
+  fileSizeBytes: number;
+  parseStatus: string;
+}
+
 export interface ResumeUploadResponse {
-  resumeUploadId: string;
+  data: ResumeUploadData;
+  resumeUploadId?: string;
 }
 
 export interface ResumeParseResponse {
