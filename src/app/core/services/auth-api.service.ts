@@ -10,7 +10,7 @@ export class AuthApiService {
     return this.api.post<{ token: string }>('/auth/login', payload);
   }
 
-  signup(payload: { email: string; password: string; fullName: string }): Observable<{ token: string }> {
+  signup(payload: { email: string; password: string }): Observable<{ token: string }> {
     return this.api.post<{ token: string }>('/auth/signup', payload);
   }
 }

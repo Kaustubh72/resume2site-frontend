@@ -14,7 +14,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
         <input [formControl]="control" placeholder="your-name">
       </div>
       <small [class.available]="available" [class.unavailable]="available === false">
-        {{ feedback }}
+        {{ isChecking ? 'Checking availability…' : feedback }}
       </small>
     </label>
   `,
@@ -31,4 +31,5 @@ export class SlugInputComponent {
   @Input({ required: true }) control!: FormControl<string | null>;
   @Input() feedback = 'Choose a short public URL for your portfolio.';
   @Input() available: boolean | null = null;
+  @Input() isChecking = false;
 }

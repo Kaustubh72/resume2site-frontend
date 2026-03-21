@@ -9,6 +9,7 @@ import {
 import { environment } from '../environments/environment';
 import { appRoutes } from './app.routes';
 import { API_BASE_URL } from './core/config/app.tokens';
+import { authInterceptor } from './core/services/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -18,7 +19,7 @@ export const appConfig: ApplicationConfig = {
       withComponentInputBinding(),
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })
     ),
-    provideHttpClient(withInterceptors([])),
+    provideHttpClient(withInterceptors([authInterceptor])),
     {
       provide: API_BASE_URL,
       useValue: environment.apiBaseUrl
