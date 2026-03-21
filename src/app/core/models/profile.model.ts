@@ -1,6 +1,7 @@
 export type PortfolioTemplateId = 'classic' | 'minimal' | 'spotlight';
 
-export interface SocialLink {
+export interface ProfileLink {
+  id: string;
   label: string;
   url: string;
 }
@@ -34,6 +35,14 @@ export interface ProjectEntry {
   link?: string;
 }
 
+export interface ProfileSectionVisibility {
+  links: boolean;
+  skills: boolean;
+  experiences: boolean;
+  education: boolean;
+  projects: boolean;
+}
+
 export interface ProfileSectionState<T> {
   items: T[];
   isDirty?: boolean;
@@ -56,11 +65,13 @@ export interface DraftProfile {
   phone?: string;
   location?: string;
   website?: string;
-  socialLinks: SocialLink[];
+  links: ProfileLink[];
+  socialLinks?: ProfileLink[];
   skills: string[];
   experiences: ExperienceEntry[];
   education: EducationEntry[];
   projects: ProjectEntry[];
+  sectionVisibility: ProfileSectionVisibility;
   selectedTemplate: PortfolioTemplateId;
   slug?: string;
   status: 'draft' | 'published';
