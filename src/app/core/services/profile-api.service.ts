@@ -1,40 +1,24 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, switchMap } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { ApiService } from './api.service';
-import {
-  DraftProfile,
-  PublishRequest,
-  ResumeParseResponse,
-  ResumeUploadResponse,
-  TemplateDefinition
-} from '../models/profile.model';
+import { DraftProfile, PublishRequest, TemplateDefinition } from '../models/profile.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileApiService {
   constructor(private readonly api: ApiService) {}
 
-  uploadResume(file: File): Observable<ResumeUploadResponse> {
+  uploadResume(file: File): Observable<{ draftId: string }> {
     const formData = new FormData();
     formData.append('resume', file);
-    return this.api.post<ResumeUploadResponse>('/resumes/upload', formData);
+    return this.api.post<{ draftId: string }>('/resumes/upload', formData);
   }
 
-  parseResume(resumeUploadId: string): Observable<ResumeParseResponse> {
-    return this.api.post<ResumeParseResponse>(`/resumes/${resumeUploadId}/parse`, {});
+  getDraft(draftId: string): Observable<DraftProfile> {
+    return this.api.get<DraftProfile>(`/drafts/${draftId}`);
   }
 
-  uploadAndParseResume(file: File): Observable<ResumeParseResponse> {
-    return this.uploadResume(file).pipe(
-      switchMap(({ resumeUploadId }) => this.parseResume(resumeUploadId))
-    );
-  }
-
-  getDraft(profileId: string): Observable<DraftProfile> {
-    return this.api.get<DraftProfile>(`/drafts/${profileId}`);
-  }
-
-  updateDraft(profileId: string, payload: Partial<DraftProfile>): Observable<DraftProfile> {
-    return this.api.patch<DraftProfile>(`/drafts/${profileId}`, payload);
+  updateDraft(draftId: string, payload: Partial<DraftProfile>): Observable<DraftProfile> {
+    return this.api.patch<DraftProfile>(`/drafts/${draftId}`, payload);
   }
 
   getTemplates(): Observable<TemplateDefinition[]> {

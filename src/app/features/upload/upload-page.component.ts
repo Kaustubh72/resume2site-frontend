@@ -1,88 +1,35 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { finalize } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ProfileApiService } from '../../core/services/profile-api.service';
-import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { FileUploadComponent } from '../../shared/components/file-upload/file-upload.component';
 import { LoadingStateComponent } from '../../shared/components/loading-state/loading-state.component';
 
 @Component({
   selector: 'r2s-upload-page',
   standalone: true,
-  imports: [CommonModule, RouterLink, FileUploadComponent, LoadingStateComponent, ErrorStateComponent],
+  imports: [CommonModule, FileUploadComponent, LoadingStateComponent],
   template: `
-    <section class="container page-grid upload-page">
+    <section class="container page-grid">
       <div class="page-header">
         <div>
-          <span class="badge">Resume upload</span>
-          <h1>Upload your resume to generate an editable portfolio draft.</h1>
-          <p>Fast, anonymous, and focused: upload, parse, and continue straight into editing.</p>
+          <span class="badge">Step 1</span>
+          <h1>Upload flow foundation</h1>
+          <p>Anonymous resume upload is the first value point in the MVP.</p>
         </div>
-        <a class="badge" routerLink="/">Back to landing</a>
       </div>
 
-      <r2s-file-upload
-        [disabled]="isProcessing"
-        [errorMessage]="validationError"
-        (fileSelected)="handleFileUpload($event)"
-        (validationError)="setValidationError($event)"
-      ></r2s-file-upload>
-
-      <r2s-loading-state
-        *ngIf="isProcessing"
-        title="Uploading and parsing your resume"
-        message="We’re creating your first editable profile draft."
-      ></r2s-loading-state>
-
-      <r2s-error-state
-        *ngIf="apiError"
-        title="We couldn’t process that resume"
-        [message]="apiError"
-      ></r2s-error-state>
+      <r2s-file-upload (fileSelected)="handleFile($event)" />
+      <r2s-loading-state *ngIf="isUploading" title="Upload placeholder" message="The backend integration will begin in the next implementation step." />
     </section>
-  `,
-  styles: [`
-    .upload-page { padding-top: 1rem; }
-    h1 { margin: 0.5rem 0 0; font-size: clamp(2rem, 3vw, 3rem); letter-spacing: -0.04em; }
-    p { margin: 0.75rem 0 0; color: var(--text-muted); max-width: 60ch; }
-  `]
+  `
 })
 export class UploadPageComponent {
-  private readonly router = inject(Router);
-  private readonly profileApi = inject(ProfileApiService);
-  private readonly destroyRef = inject(DestroyRef);
+  isUploading = false;
 
-  isProcessing = false;
-  validationError: string | null = null;
-  apiError: string | null = null;
+  constructor(private readonly router: Router) {}
 
-  handleFileUpload(file: File): void {
-    this.validationError = null;
-    this.apiError = null;
-    this.isProcessing = true;
-
-    this.profileApi
-      .uploadAndParseResume(file)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        finalize(() => {
-          this.isProcessing = false;
-        })
-      )
-      .subscribe({
-        next: ({ profileId }) => {
-          void this.router.navigate(['/draft', profileId]);
-        },
-        error: () => {
-          this.apiError = 'Please try again. If the problem continues, use another PDF or DOCX resume.';
-        }
-      });
-  }
-
-  setValidationError(message: string): void {
-    this.apiError = null;
-    this.validationError = message;
+  handleFile(): void {
+    this.isUploading = true;
+    void this.router.navigate(['/draft', 'demo-draft']);
   }
 }

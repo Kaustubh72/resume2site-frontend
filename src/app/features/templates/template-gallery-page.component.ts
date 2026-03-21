@@ -16,22 +16,22 @@ import { TemplateDefinition } from '../../core/models/profile.model';
           <h1>Template gallery foundation</h1>
           <p>Preview happens before login, and every template reads from the same draft profile shape.</p>
         </div>
-        <a class="badge" [routerLink]="['/publish', profileId]">Go to publish flow</a>
+        <a class="badge" [routerLink]="['/publish', draftId]">Go to publish flow</a>
       </div>
 
       <div class="template-grid">
         <r2s-template-card
           *ngFor="let template of templates"
           [template]="template"
-          [previewLink]="['/templates', profileId, 'preview', template.id]"
-        ></r2s-template-card>
+          [previewLink]="['/templates', draftId, 'preview', template.id]"
+        />
       </div>
     </section>
   `,
   styles: [`.template-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }`]
 })
 export class TemplateGalleryPageComponent {
-  profileId = this.route.snapshot.paramMap.get('profileId') ?? 'draft';
+  draftId = this.route.snapshot.paramMap.get('draftId') ?? 'draft';
   templates: TemplateDefinition[] = [
     { id: 'classic', name: 'Classic', description: 'Balanced profile layout.', audience: 'Students & developers', accentLabel: 'Professional' },
     { id: 'minimal', name: 'Minimal', description: 'Simple layout with strong readability.', audience: 'Software engineers', accentLabel: 'Minimal' },

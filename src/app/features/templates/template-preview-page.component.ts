@@ -14,7 +14,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
           <h1>{{ templateId | titlecase }} template preview shell</h1>
           <p>This placeholder route proves the preview flow exists before auth is introduced.</p>
         </div>
-        <a class="badge" [routerLink]="['/publish', profileId]">Publish this template</a>
+        <a class="badge" [routerLink]="['/publish', draftId]">Publish this template</a>
       </div>
 
       <article class="card section-shell preview-shell">
@@ -26,7 +26,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
   styles: [`.preview-shell { min-height: 380px; } h2, p { margin: 0; } p { color: var(--text-muted); margin-top: 0.5rem; }`]
 })
 export class TemplatePreviewPageComponent {
-  profileId = this.route.snapshot.paramMap.get('profileId') ?? 'draft';
+  draftId = this.route.snapshot.paramMap.get('draftId') ?? 'draft';
   templateId = this.route.snapshot.paramMap.get('templateId') ?? 'classic';
 
   constructor(private readonly route: ActivatedRoute) {}

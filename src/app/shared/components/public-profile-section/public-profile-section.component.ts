@@ -9,7 +9,7 @@ import { Component, Input } from '@angular/core';
     <section class="public-section">
       <h2>{{ title }}</h2>
       <p *ngIf="description">{{ description }}</p>
-      <ng-content></ng-content>
+      <ng-content />
     </section>
   `,
   styles: [`

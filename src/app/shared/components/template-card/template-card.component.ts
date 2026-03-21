@@ -24,5 +24,5 @@ import { TemplateDefinition } from '../../../core/models/profile.model';
 })
 export class TemplateCardComponent {
   @Input({ required: true }) template!: TemplateDefinition;
-  @Input() previewLink: string | unknown[] = ['/templates', 'demo-draft'];
+  @Input() previewLink: string | readonly unknown[] = ['/templates', 'demo-draft'];
 }

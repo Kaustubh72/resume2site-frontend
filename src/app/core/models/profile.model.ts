@@ -39,14 +39,6 @@ export interface ProfileSectionState<T> {
   isDirty?: boolean;
 }
 
-export interface ResumeUploadResponse {
-  resumeUploadId: string;
-}
-
-export interface ResumeParseResponse {
-  profileId: string;
-}
-
 export interface DraftProfile {
   id: string;
   fullName: string;

@@ -5,6 +5,6 @@ import { AppShellComponent } from './core/layout/app-shell.component';
   selector: 'r2s-root',
   standalone: true,
   imports: [AppShellComponent],
-  template: `<r2s-app-shell></r2s-app-shell>`
+  template: `<r2s-app-shell />`
 })
 export class AppComponent {}

@@ -17,7 +17,7 @@ import { EmptyStateComponent } from '../../shared/components/empty-state/empty-s
         <a class="badge" routerLink="/upload">Create another draft</a>
       </div>
 
-      <r2s-empty-state title="No portfolios wired yet" message="This dashboard foundation is ready for authenticated portfolio listing in a later step."></r2s-empty-state>
+      <r2s-empty-state title="No portfolios wired yet" message="This dashboard foundation is ready for authenticated portfolio listing in a later step." />
     </section>
   `
 })
