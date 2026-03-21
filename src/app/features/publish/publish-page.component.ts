@@ -13,7 +13,7 @@ import { SlugInputComponent } from '../../shared/components/slug-input/slug-inpu
         <div>
           <span class="badge">Step 4</span>
           <h1>Publish flow shell</h1>
-          <p>Draft {{ draftId }} is ready for slug selection after authentication.</p>
+          <p>Profile {{ profileId }} is ready for slug selection after authentication.</p>
         </div>
       </div>
 
@@ -29,7 +29,7 @@ import { SlugInputComponent } from '../../shared/components/slug-input/slug-inpu
 export class PublishPageComponent {
   private readonly route = inject(ActivatedRoute);
 
-  protected readonly draftId = this.route.snapshot.paramMap.get('draftId') ?? 'draft';
+  protected readonly profileId = this.route.snapshot.paramMap.get('profileId') ?? 'draft';
   protected readonly slugControl = new FormControl('your-name');
   protected readonly feedback = 'Looks good. This slug is available in the mock foundation.';
 }

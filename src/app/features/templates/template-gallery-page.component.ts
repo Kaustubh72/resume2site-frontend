@@ -16,14 +16,14 @@ import { TemplateCardComponent } from '../../shared/components/template-card/tem
           <h1>Template gallery foundation</h1>
           <p>Preview happens before login, and every template reads from the same draft profile shape.</p>
         </div>
-        <a class="badge" [routerLink]="['/publish', draftId]">Go to publish flow</a>
+        <a class="badge" [routerLink]="['/publish', profileId]">Go to publish flow</a>
       </div>
 
       <div class="template-grid">
         <r2s-template-card
           *ngFor="let template of templates"
           [template]="template"
-          [previewLink]="['/templates', draftId, 'preview', template.id]"
+          [previewLink]="['/templates', profileId, 'preview', template.id]"
         ></r2s-template-card>
       </div>
     </section>
@@ -33,7 +33,7 @@ import { TemplateCardComponent } from '../../shared/components/template-card/tem
 export class TemplateGalleryPageComponent {
   private readonly route = inject(ActivatedRoute);
 
-  protected readonly draftId = this.route.snapshot.paramMap.get('draftId') ?? 'draft';
+  protected readonly profileId = this.route.snapshot.paramMap.get('profileId') ?? 'draft';
   protected readonly templates: TemplateDefinition[] = [
     { id: 'classic', name: 'Classic', description: 'Balanced profile layout.', audience: 'Students & developers', accentLabel: 'Professional' },
     { id: 'minimal', name: 'Minimal', description: 'Simple layout with strong readability.', audience: 'Software engineers', accentLabel: 'Minimal' },

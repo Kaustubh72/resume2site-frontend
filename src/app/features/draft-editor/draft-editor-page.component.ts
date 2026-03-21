@@ -12,9 +12,9 @@ import { SectionEditorComponent } from '../../shared/components/section-editor/s
         <div>
           <span class="badge">Step 2</span>
           <h1>Draft editor shell</h1>
-          <p>Draft ID: {{ draftId }}. Structured sections are shared across templates and fully editable.</p>
+          <p>Profile ID: {{ profileId }}. Structured sections are shared across templates and fully editable.</p>
         </div>
-        <a class="badge" [routerLink]="['/templates', draftId]">Continue to templates</a>
+        <a class="badge" [routerLink]="['/templates', profileId]">Continue to templates</a>
       </div>
 
       <r2s-section-editor title="Experience" description="Resume experience entries parsed into structured items." [items]="sample.experiences" itemLabelKey="company"></r2s-section-editor>
@@ -26,7 +26,7 @@ import { SectionEditorComponent } from '../../shared/components/section-editor/s
 export class DraftEditorPageComponent {
   private readonly route = inject(ActivatedRoute);
 
-  protected readonly draftId = this.route.snapshot.paramMap.get('draftId') ?? 'draft';
+  protected readonly profileId = this.route.snapshot.paramMap.get('profileId') ?? 'draft';
   protected readonly sample = {
     experiences: [{ company: 'Acme Labs', role: 'Frontend Intern', summary: 'Built Angular components.' }],
     projects: [{ name: 'Portfolio Generator', description: 'Generated portfolio drafts from resume data.' }],

@@ -1,11 +1,14 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { ApplicationConfig, isDevMode } from '@angular/core';
-import { provideRouter, withComponentInputBinding, withEnabledBlockingInitialNavigation, withInMemoryScrolling } from '@angular/router';
-import { API_BASE_URL } from './core/config/app.tokens';
-import { appRoutes } from './app.routes';
+import { ApplicationConfig } from '@angular/core';
+import {
+  provideRouter,
+  withComponentInputBinding,
+  withEnabledBlockingInitialNavigation,
+  withInMemoryScrolling
+} from '@angular/router';
 import { environment } from '../environments/environment';
-
-const noopInterceptor = withInterceptors([]);
+import { appRoutes } from './app.routes';
+import { API_BASE_URL } from './core/config/app.tokens';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,10 +18,10 @@ export const appConfig: ApplicationConfig = {
       withComponentInputBinding(),
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })
     ),
-    provideHttpClient(noopInterceptor),
+    provideHttpClient(withInterceptors([])),
     {
       provide: API_BASE_URL,
-      useValue: isDevMode() ? environment.apiBaseUrl : environment.apiBaseUrl
+      useValue: environment.apiBaseUrl
     }
   ]
 };
