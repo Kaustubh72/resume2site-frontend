@@ -1,0 +1,21 @@
+      .shell { min-height: 100vh; }
+      .shell__header {
+        position: sticky; top: 0; z-index: 10;
+        border-bottom: 1px solid var(--border);
+        background: rgba(246, 247, 251, 0.92);
+        backdrop-filter: blur(12px);
+      }
+      .shell__header-inner {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 1rem; min-height: 72px;
+      }
+      .brand { font-weight: 800; letter-spacing: -0.03em; }
+      .shell__nav { display: flex; flex-wrap: wrap; gap: 1rem; color: var(--text-muted); align-items: center; }
+      .logout-button { border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; padding: 0; }
+      .shell__nav a.active, .shell__nav a:hover { color: var(--primary); }
+      .logout-button:hover { color: var(--primary); }
+      .shell__content { padding: 2rem 0 4rem; }
+      @media (max-width: 768px) {
+        .shell__header-inner { align-items: flex-start; padding: 1rem 0; flex-direction: column; }
+      }
+    

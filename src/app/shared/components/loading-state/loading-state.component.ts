@@ -12,12 +12,7 @@ import { Component, Input } from '@angular/core';
       </div>
     </div>
   `,
-  styles: [`
-    .state { display: grid; grid-template-columns: auto 1fr; gap: 1rem; padding: 1rem 1.25rem; align-items: center; }
-    .spinner { width: 20px; height: 20px; border-radius: 50%; border: 3px solid var(--border); border-top-color: var(--primary); animation: spin 1s linear infinite; }
-    p { margin: 0.25rem 0 0; color: var(--text-muted); }
-    @keyframes spin { to { transform: rotate(360deg); } }
-  `]
+  styleUrl: './loading-state.component.scss'
 })
 export class LoadingStateComponent {
   @Input() title = 'Loading';

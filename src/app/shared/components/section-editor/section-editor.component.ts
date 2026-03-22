@@ -27,13 +27,7 @@ import { Component, Input } from '@angular/core';
       </ng-template>
     </section>
   `,
-  styles: [`
-    .section-header { display: flex; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
-    h3 { margin: 0; } p { margin: 0.35rem 0 0; color: var(--text-muted); }
-    .item { padding: 1rem 0; border-top: 1px solid var(--border); }
-    pre { margin: 0.5rem 0 0; white-space: pre-wrap; color: var(--text-muted); }
-    .empty { color: var(--text-muted); margin: 0; }
-  `]
+  styleUrl: './section-editor.component.scss'
 })
 export class SectionEditorComponent {
   @Input() title = '';

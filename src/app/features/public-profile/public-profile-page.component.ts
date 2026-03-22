@@ -82,92 +82,7 @@ import { TemplateRendererComponent } from '../../shared/components/template-rend
       </div>
     </section>
   `,
-  styles: [`
-    .public-page-shell {
-      min-height: 100vh;
-      padding: 1.5rem 0 3rem;
-      background:
-        radial-gradient(circle at top, rgba(79, 70, 229, 0.08), transparent 28%),
-        linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
-    }
-    .public-page {
-      display: grid;
-      gap: 1.5rem;
-      align-items: start;
-    }
-    .hero-card {
-      display: grid;
-      grid-template-columns: minmax(0, 1.7fr) minmax(220px, 0.8fr);
-      gap: 1.5rem;
-      padding: 1.75rem;
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(8px);
-    }
-    .hero-copy,
-    .hero-meta,
-    .portfolio-footer {
-      display: grid;
-      gap: 0.75rem;
-    }
-    h1,
-    p {
-      margin: 0;
-    }
-    h1 {
-      font-size: clamp(2rem, 4vw, 3.5rem);
-      line-height: 1;
-      letter-spacing: -0.05em;
-    }
-    .hero-lead {
-      font-size: 1.1rem;
-      color: #334155;
-      font-weight: 600;
-    }
-    .hero-summary {
-      color: var(--text-muted);
-      line-height: 1.7;
-      max-width: 70ch;
-    }
-    .hero-meta {
-      padding: 1.25rem;
-      border-radius: 24px;
-      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
-      border: 1px solid var(--border);
-      align-content: start;
-    }
-    .hero-meta div {
-      display: grid;
-      gap: 0.3rem;
-    }
-    .hero-meta span,
-    .portfolio-footer p {
-      color: var(--text-muted);
-    }
-    .hero-meta strong,
-    .hero-meta a {
-      font-size: 1rem;
-      color: var(--text);
-      word-break: break-word;
-    }
-    .portfolio-footer {
-      justify-items: center;
-      text-align: center;
-      padding: 0 1rem;
-    }
-    @media (max-width: 900px) {
-      .hero-card {
-        grid-template-columns: 1fr;
-      }
-    }
-    @media (max-width: 640px) {
-      .public-page-shell {
-        padding: 1rem 0 2.5rem;
-      }
-      .hero-card {
-        padding: 1.25rem;
-      }
-    }
-  `]
+  styleUrl: './public-profile-page.component.scss'
 })
 export class PublicProfilePageComponent {
   private readonly route = inject(ActivatedRoute);
@@ -204,6 +119,12 @@ export class PublicProfilePageComponent {
 
   private loadPublicProfile(): void {
     this.title.setTitle('Portfolio | Resume2Site');
+
+    if (!this.slug.trim()) {
+      this.isLoading = false;
+      this.state = 'not-found';
+      return;
+    }
 
     this.profileApi.getPublicProfile(this.slug).pipe(
       finalize(() => this.isLoading = false),

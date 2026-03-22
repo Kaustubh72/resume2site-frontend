@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { finalize, forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { finalize, forkJoin } from 'rxjs';
 import { DraftProfile, PortfolioTemplateId, TemplateDefinition } from '../../core/models/profile.model';
+import { APP_PATHS } from '../../core/constants/app.constants';
 import { ProfileApiService } from '../../core/services/profile-api.service';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
@@ -146,38 +146,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
       </ng-container>
     </section>
   `,
-  styles: [`
-    .dashboard-page { padding: 1rem 0 3rem; }
-    h1, h2, p { margin: 0; }
-    .page-header p, .dashboard-overview p, .muted-copy, .profile-card__header p { color: var(--text-muted); }
-    .dashboard-grid, .dashboard-overview, .profile-card, .profile-card__body, .overview-stats, .profile-meta, .feedback-stack { display: grid; gap: 1rem; }
-    .dashboard-overview, .profile-card__header, .block-head, .action-grid, .template-switcher { display: flex; gap: 1rem; flex-wrap: wrap; }
-    .dashboard-overview, .profile-card__header { justify-content: space-between; align-items: start; }
-    .overview-stats, .profile-meta { grid-template-columns: repeat(2, minmax(140px, 1fr)); }
-    .overview-stats > div, .profile-meta > div, .card-block {
-      border: 1px solid var(--border); border-radius: 18px; padding: 1rem; background: #fcfcff;
-    }
-    .profile-card { gap: 1.25rem; }
-    .title-row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.35rem; }
-    .status-badge { background: #ecfdf3; color: var(--success); }
-    .status-badge--draft { background: #fff7ed; color: var(--warning); }
-    .meta-label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.35rem; }
-    .public-url { color: var(--primary); font-weight: 700; word-break: break-all; }
-    .toggle-pill {
-      border: 1px solid var(--border); background: white; color: var(--text); padding: 0.75rem 1rem; border-radius: 999px; font-weight: 700;
-    }
-    .toggle-pill.active { background: var(--primary); color: white; border-color: var(--primary); }
-    .toggle-pill:disabled { opacity: 0.65; cursor: wait; }
-    .action-grid { align-items: center; }
-    .success-message, .error-message { margin: 0; }
-    .success-message { color: var(--success); }
-    .error-message { color: var(--danger); }
-    @media (max-width: 768px) {
-      .dashboard-overview, .profile-card__header { flex-direction: column; }
-      .overview-stats, .profile-meta { grid-template-columns: 1fr; width: 100%; }
-      .action-grid { flex-direction: column; align-items: stretch; }
-    }
-  `]
+  styleUrl: './dashboard-page.component.scss'
 })
 export class DashboardPageComponent {
   private readonly profileApi = inject(ProfileApiService);
@@ -214,7 +183,7 @@ export class DashboardPageComponent {
   }
 
   protected getPublicUrl(slug: string): string {
-    return `${window.location.origin}/u/${slug}`;
+    return `${window.location.origin}${APP_PATHS.publicPortfolioBase}/${slug}`;
   }
 
   protected formatUpdatedAt(updatedAt?: string): string {
@@ -290,7 +259,7 @@ export class DashboardPageComponent {
 
   private loadDashboard(): void {
     forkJoin({
-      profiles: this.profileApi.getDashboardProfiles().pipe(catchError(() => of(this.buildFallbackProfiles()))),
+      profiles: this.profileApi.getDashboardProfiles(),
       templates: this.profileApi.getTemplates()
     }).pipe(
       finalize(() => this.isLoading = false),
@@ -314,62 +283,5 @@ export class DashboardPageComponent {
     delete this.templateMessages[profileId];
     delete this.republishMessages[profileId];
     delete this.actionErrors[profileId];
-  }
-
-  private buildFallbackProfiles(): DraftProfile[] {
-    return [
-      {
-        id: 'profile-1',
-        fullName: 'Avery Johnson',
-        headline: 'Frontend developer building polished product experiences',
-        summary: 'Early-career engineer with internship and project experience across Angular, React, and TypeScript.',
-        email: 'avery@example.com',
-        phone: '+1 555 010 1010',
-        location: 'Austin, TX',
-        links: [
-          { id: 'github', label: 'GitHub', url: 'https://github.com/avery' },
-          { id: 'linkedin', label: 'LinkedIn', url: 'https://linkedin.com/in/avery' }
-        ],
-        socialLinks: [],
-        skills: ['Angular', 'TypeScript', 'Node.js', 'REST APIs'],
-        experiences: [
-          {
-            id: 'exp-1',
-            company: 'LaunchPad Labs',
-            role: 'Frontend Intern',
-            location: 'Remote',
-            startDate: '2025-01-01',
-            endDate: '2025-05-01',
-            summary: 'Built reusable UI flows for profile editing and onboarding.',
-            highlights: ['Reduced duplicated UI work', 'Improved student onboarding flow']
-          }
-        ],
-        education: [
-          {
-            id: 'edu-1',
-            institution: 'State University',
-            degree: 'B.S.',
-            field: 'Computer Science',
-            startDate: '2022-08-01',
-            endDate: '2026-05-01',
-            score: '3.8 GPA'
-          }
-        ],
-        projects: [
-          {
-            id: 'proj-1',
-            name: 'Resume2Site MVP',
-            description: 'Turned resume uploads into editable portfolio drafts with template-based previews.',
-            technologies: ['Angular', 'TypeScript', 'Node'],
-            link: 'https://example.com'
-          }
-        ],
-        sectionVisibility: { links: true, skills: true, experiences: true, education: true, projects: true },
-        selectedTemplate: 'classic',
-        slug: 'avery-johnson',
-        status: 'published',
-        updatedAt: '2026-03-18T12:00:00.000Z'
-      }
-    ];
   }
 }

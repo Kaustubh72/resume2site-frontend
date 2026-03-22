@@ -9,7 +9,7 @@ import { Component, Input } from '@angular/core';
       <p>{{ message }}</p>
     </div>
   `,
-  styles: [`.state { padding: 1rem 1.25rem; border-color: rgba(185, 28, 28, 0.2); } p { margin: 0.4rem 0 0; color: var(--danger); }`]
+  styleUrl: './error-state.component.scss'
 })
 export class ErrorStateComponent {
   @Input() title = 'Something went wrong';

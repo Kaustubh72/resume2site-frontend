@@ -43,11 +43,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
       ></r2s-error-state>
     </section>
   `,
-  styles: [`
-    .upload-page { padding-top: 1rem; }
-    h1 { margin: 0.5rem 0 0; font-size: clamp(2rem, 3vw, 3rem); letter-spacing: -0.04em; }
-    p { margin: 0.75rem 0 0; color: var(--text-muted); max-width: 60ch; }
-  `]
+  styleUrl: './upload-page.component.scss'
 })
 export class UploadPageComponent {
   private readonly router = inject(Router);
@@ -73,6 +69,7 @@ export class UploadPageComponent {
       )
       .subscribe({
         next: ({ profileId }) => {
+          this.profileApi.rememberDraftAccess(profileId);
           void this.router.navigate(['/draft', profileId]);
         },
         error: () => {

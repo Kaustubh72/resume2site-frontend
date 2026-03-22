@@ -8,6 +8,8 @@ import { DraftProfile } from '../../core/models/profile.model';
 import { AuthApiService } from '../../core/services/auth-api.service';
 import { AuthSessionService } from '../../core/services/auth-session.service';
 import { ProfileApiService } from '../../core/services/profile-api.service';
+import { APP_PATHS, SLUG_RULES } from '../../core/constants/app.constants';
+import { buildSlugSuggestions, slugifyProfileName } from '../../core/utils/slug.util';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { LoadingStateComponent } from '../../shared/components/loading-state/loading-state.component';
 import { SlugInputComponent } from '../../shared/components/slug-input/slug-input.component';
@@ -34,8 +36,8 @@ import { SlugInputComponent } from '../../shared/components/slug-input/slug-inpu
         <section class="card section-shell publish-summary">
           <div>
             <span class="badge">Ready to publish</span>
-            <h2>{{ draft.fullName }}</h2>
-            <p>{{ draft.headline }}</p>
+            <h2>{{ draft.fullName || 'Untitled portfolio draft' }}</h2>
+            <p>{{ draft.headline || 'Add a headline in the editor before publishing for a stronger first impression.' }}</p>
           </div>
           <dl>
             <div>
@@ -45,6 +47,10 @@ import { SlugInputComponent } from '../../shared/components/slug-input/slug-inpu
             <div>
               <dt>Status</dt>
               <dd>{{ draft.status | titlecase }}</dd>
+            </div>
+            <div>
+              <dt>Draft access</dt>
+              <dd>{{ authSession.isAuthenticated() ? 'Authenticated owner' : 'Anonymous draft owner' }}</dd>
             </div>
           </dl>
         </section>
@@ -141,34 +147,7 @@ import { SlugInputComponent } from '../../shared/components/slug-input/slug-inpu
       </ng-container>
     </section>
   `,
-  styles: [`
-    .publish-page { padding: 1rem 0 3rem; }
-    h1, h2, p, dl, dt, dd { margin: 0; }
-    .publish-summary, .auth-card, .slug-card, .success-card, .publish-form, .auth-form { display: grid; gap: 1rem; }
-    .publish-summary { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); align-items: end; }
-    .publish-summary p, .section-copy p, .copy-feedback { color: var(--text-muted); }
-    dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
-    dt { font-size: 0.85rem; color: var(--text-muted); }
-    dd { font-weight: 700; margin-top: 0.25rem; }
-    .publish-grid { display: grid; }
-    .auth-toggle, .publish-actions, .suggestion-list, .success-link-row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
-    .toggle-pill, .suggestion-pill {
-      border: 1px solid var(--border); background: white; color: var(--text); padding: 0.8rem 1rem; border-radius: 999px; font-weight: 700;
-    }
-    .toggle-pill.active { background: var(--primary); border-color: var(--primary); color: white; }
-    .auth-form label, .publish-form label { display: grid; gap: 0.45rem; }
-    input {
-      min-height: 52px; border-radius: 14px; border: 1px solid var(--border); padding: 0 1rem; background: white; color: var(--text);
-    }
-    .error-message { color: var(--danger); }
-    .suggestions { display: grid; gap: 0.75rem; }
-    .published-link { font-weight: 700; color: var(--primary); word-break: break-all; }
-    .success-link-row { justify-content: space-between; }
-    @media (max-width: 768px) {
-      dl { grid-template-columns: 1fr; }
-      .success-link-row { align-items: flex-start; }
-    }
-  `]
+  styleUrl: './publish-page.component.scss'
 })
 export class PublishPageComponent {
   private readonly route = inject(ActivatedRoute);
@@ -185,7 +164,7 @@ export class PublishPageComponent {
   protected readonly publishForm = new FormGroup({
     slug: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.pattern(/^[a-z0-9]+(?:-[a-z0-9]+)*$/), Validators.minLength(3), Validators.maxLength(40)]
+      validators: [Validators.required, Validators.pattern(/^[a-z0-9]+(?:-[a-z0-9]+)*$/), Validators.minLength(SLUG_RULES.minLength), Validators.maxLength(SLUG_RULES.maxLength)]
     })
   });
 
@@ -206,7 +185,7 @@ export class PublishPageComponent {
   protected readonly isPublished = computed(() => !!this.publishedSlug());
   protected readonly publishedUrl = computed(() => {
     const slug = this.publishedSlug();
-    return slug ? `${window.location.origin}/u/${slug}` : '';
+    return slug ? `${window.location.origin}${APP_PATHS.publicPortfolioBase}/${slug}` : '';
   });
   protected readonly slugControl = this.publishForm.controls.slug;
   protected readonly slugFeedback = computed(() => {
@@ -218,10 +197,10 @@ export class PublishPageComponent {
       return 'Only lowercase letters, numbers, and single hyphens are allowed.';
     }
     if (control.hasError('minlength')) {
-      return 'Use at least 3 characters.';
+      return `Use at least ${SLUG_RULES.minLength} characters.`;
     }
     if (control.hasError('maxlength')) {
-      return 'Use 40 characters or fewer.';
+      return `Use ${SLUG_RULES.maxLength} characters or fewer.`;
     }
     if (this.isCheckingSlug()) {
       return 'Checking availability…';
@@ -328,6 +307,9 @@ export class PublishPageComponent {
       next: (profile) => {
         this.profile.set(profile);
         this.seedSlugFromProfile();
+        if (profile.status === 'published' && profile.slug) {
+          this.publishedSlug.set(profile.slug);
+        }
       },
       error: () => {
         this.profileError.set('Open the draft editor first, then return here to publish your portfolio.');
@@ -371,25 +353,11 @@ export class PublishPageComponent {
       return;
     }
 
-    const suggestedSlug = this.slugify(this.profile()!.fullName);
+    const suggestedSlug = this.profile()!.slug || slugifyProfileName(this.profile()!.fullName);
     this.slugControl.setValue(suggestedSlug);
   }
 
-  private slugify(value: string): string {
-    return value
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .slice(0, 40);
-  }
-
   private buildSlugSuggestions(baseSlug: string): string[] {
-    return [
-      `${baseSlug}-dev`,
-      `${baseSlug}-portfolio`,
-      `${baseSlug}-${new Date().getUTCFullYear()}`
-    ].slice(0, 3);
+    return buildSlugSuggestions(baseSlug);
   }
 }

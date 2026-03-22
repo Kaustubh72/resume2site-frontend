@@ -63,9 +63,11 @@ export interface ResumeUploadResponse {
 
 export interface ResumeParseResponse {
   profileId: string;
+  draftAccessToken?: string;
 }
 
 export interface DraftProfile {
+  draftAccessToken?: string;
   id: string;
   fullName: string;
   headline: string;
