@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, switchMap } from 'rxjs';
+import { Observable, of, switchMap, tap } from 'rxjs';
 import { ApiService } from './api.service';
 import { API_ROUTES } from '../config/api-routes';
 import {
@@ -8,10 +8,14 @@ import {
   ResumeUploadResponse,
   TemplateDefinition
 } from '../models/profile.model';
+import { DraftAccessService } from './draft-access.service';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileApiService {
-  constructor(private readonly api: ApiService) {}
+  constructor(
+    private readonly api: ApiService,
+    private readonly draftAccess: DraftAccessService
+  ) {}
 
   uploadResume(file: File): Observable<ResumeUploadResponse> {
     const formData = new FormData();
@@ -20,7 +24,13 @@ export class ProfileApiService {
   }
 
   parseResume(resumeUploadId: string): Observable<ResumeParseResponse> {
-    return this.api.post<ResumeParseResponse>(API_ROUTES.resume.parse(resumeUploadId), {});
+    return this.api.post<ResumeParseResponse>(API_ROUTES.resume.parse(resumeUploadId), {}).pipe(
+      tap(({ profileId, draftAccessToken }) => {
+        if (profileId) {
+          this.draftAccess.setActiveProfile(profileId, draftAccessToken);
+        }
+      })
+    );
   }
 
   uploadAndParseResume(file: File): Observable<ResumeParseResponse> {
@@ -42,7 +52,9 @@ export class ProfileApiService {
   }
 
   getDraft(profileId: string): Observable<DraftProfile> {
-    return this.api.get<DraftProfile>(API_ROUTES.profile.get(profileId));
+    return this.api.get<DraftProfile>(API_ROUTES.profile.get(profileId), this.withDraftAccess(profileId)).pipe(
+      tap((profile) => this.draftAccess.setActiveProfile(profile.id || profileId, profile.draftAccessToken))
+    );
   }
 
   getDashboardProfiles(): Observable<DraftProfile[]> {
@@ -51,7 +63,9 @@ export class ProfileApiService {
 
   updateDraft(profileId: string, payload: Partial<DraftProfile>): Observable<DraftProfile> {
     // backend API currently uses PUT /api/profiles/{profileId}; patch preserved for partial updates in future
-    return this.api.patch<DraftProfile>(API_ROUTES.profile.update(profileId), payload);
+    return this.api.patch<DraftProfile>(API_ROUTES.profile.update(profileId), payload, this.withDraftAccess(profileId)).pipe(
+      tap((profile) => this.draftAccess.rememberDraft(profile.id || profileId, profile.draftAccessToken))
+    );
   }
 
   getTemplates(): Observable<TemplateDefinition[]> {
@@ -91,14 +105,23 @@ export class ProfileApiService {
   }
 
   publishPortfolio(profileId: string, payload: { slug: string }): Observable<{ slug: string; publicUrl?: string }> {
-    return this.api.post<{ slug: string; publicUrl?: string }>(API_ROUTES.profile.publish(profileId), payload);
+    return this.api.post<{ slug: string; publicUrl?: string }>(API_ROUTES.profile.publish(profileId), payload, this.withDraftAccess(profileId));
   }
 
   republishPortfolio(profileId: string, payload: { slug: string }): Observable<{ slug: string; publicUrl?: string }> {
-    return this.api.post<{ slug: string; publicUrl?: string }>(API_ROUTES.profile.republish(profileId), payload);
+    return this.api.post<{ slug: string; publicUrl?: string }>(API_ROUTES.profile.republish(profileId), payload, this.withDraftAccess(profileId));
   }
 
   getPublicProfile(slug: string): Observable<DraftProfile> {
     return this.api.get<DraftProfile>(API_ROUTES.public.profileBySlug(slug));
+  }
+
+  rememberDraftAccess(profileId: string, token?: string | null): void {
+    this.draftAccess.setActiveProfile(profileId, token);
+  }
+
+  private withDraftAccess(profileId: string): { headers?: Record<string, string> } {
+    const token = this.draftAccess.getToken(profileId);
+    return token ? { headers: { 'X-Draft-Access-Token': token } } : {};
   }
 }

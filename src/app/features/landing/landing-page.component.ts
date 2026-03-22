@@ -90,35 +90,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
       </section>
     </section>
   `,
-  styles: [`
-    .landing-page { display: grid; gap: 3rem; padding-top: 1.5rem; }
-    .hero { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr); gap: 1.5rem; align-items: stretch; }
-    .hero__content { padding: 1rem 0; }
-    h1 { margin: 1rem 0; font-size: clamp(2.75rem, 5vw, 4.75rem); line-height: 0.97; letter-spacing: -0.06em; max-width: 12ch; }
-    h2, h3 { margin: 0; }
-    p { margin: 0; color: var(--text-muted); }
-    .hero__content > p { font-size: 1.1rem; max-width: 62ch; }
-    .hero__actions { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.75rem 0; }
-    .primary, .secondary {
-      min-height: 52px; padding: 0 1.2rem; border-radius: 14px; font-weight: 700; border: 0; cursor: pointer;
-      display: inline-flex; align-items: center; justify-content: center;
-    }
-    .primary { background: var(--primary); color: white; }
-    .secondary { background: var(--surface); border: 1px solid var(--border); }
-    .hero__highlights { display: grid; gap: 0.75rem; padding: 0; margin: 0; list-style: none; color: var(--text); }
-    .hero__highlights li::before { content: '• '; color: var(--primary); font-weight: 800; }
-    .hero__panel { display: grid; gap: 1rem; }
-    .hero__panel ol { margin: 0; padding-left: 1.25rem; color: var(--text-muted); display: grid; gap: 0.6rem; }
-    .hero__panel a { color: var(--primary); font-weight: 600; }
-    .landing-upload { display: grid; gap: 1rem; scroll-margin-top: 6rem; }
-    .landing-upload__intro { display: grid; gap: 0.5rem; }
-    .how-it-works { display: grid; gap: 1rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .how-it-works article { display: grid; gap: 0.75rem; }
-    @media (max-width: 960px) {
-      .hero, .how-it-works { grid-template-columns: 1fr; }
-      h1 { max-width: none; }
-    }
-  `]
+  styleUrl: './landing-page.component.scss'
 })
 export class LandingPageComponent {
   private readonly viewportScroller = inject(ViewportScroller);
@@ -149,6 +121,7 @@ export class LandingPageComponent {
       )
       .subscribe({
         next: ({ profileId }) => {
+          this.profileApi.rememberDraftAccess(profileId);
           void this.router.navigate(['/draft', profileId]);
         },
         error: () => {

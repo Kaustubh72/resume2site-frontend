@@ -1,0 +1,31 @@
+    .dashboard-page { padding: 1rem 0 3rem; }
+    h1, h2, p { margin: 0; }
+    .page-header p, .dashboard-overview p, .muted-copy, .profile-card__header p { color: var(--text-muted); }
+    .dashboard-grid, .dashboard-overview, .profile-card, .profile-card__body, .overview-stats, .profile-meta, .feedback-stack { display: grid; gap: 1rem; }
+    .dashboard-overview, .profile-card__header, .block-head, .action-grid, .template-switcher { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .dashboard-overview, .profile-card__header { justify-content: space-between; align-items: start; }
+    .overview-stats, .profile-meta { grid-template-columns: repeat(2, minmax(140px, 1fr)); }
+    .overview-stats > div, .profile-meta > div, .card-block {
+      border: 1px solid var(--border); border-radius: 18px; padding: 1rem; background: #fcfcff;
+    }
+    .profile-card { gap: 1.25rem; }
+    .title-row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.35rem; }
+    .status-badge { background: #ecfdf3; color: var(--success); }
+    .status-badge--draft { background: #fff7ed; color: var(--warning); }
+    .meta-label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.35rem; }
+    .public-url { color: var(--primary); font-weight: 700; word-break: break-all; }
+    .toggle-pill {
+      border: 1px solid var(--border); background: white; color: var(--text); padding: 0.75rem 1rem; border-radius: 999px; font-weight: 700;
+    }
+    .toggle-pill.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .toggle-pill:disabled { opacity: 0.65; cursor: wait; }
+    .action-grid { align-items: center; }
+    .success-message, .error-message { margin: 0; }
+    .success-message { color: var(--success); }
+    .error-message { color: var(--danger); }
+    @media (max-width: 768px) {
+      .dashboard-overview, .profile-card__header { flex-direction: column; }
+      .overview-stats, .profile-meta { grid-template-columns: 1fr; width: 100%; }
+      .action-grid { flex-direction: column; align-items: stretch; }
+    }
+  

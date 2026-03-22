@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { finalize, forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { finalize, forkJoin } from 'rxjs';
 import { DraftProfile, PortfolioTemplateId, TemplateDefinition } from '../../core/models/profile.model';
+import { DEFAULT_TEMPLATE_ID, STORAGE_KEYS } from '../../core/constants/app.constants';
 import { ProfileApiService } from '../../core/services/profile-api.service';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { LoadingStateComponent } from '../../shared/components/loading-state/loading-state.component';
@@ -72,16 +72,7 @@ import { TemplateRendererComponent } from '../../shared/components/template-rend
       </ng-container>
     </section>
   `,
-  styles: [`
-    .preview-page { padding: 1rem 0 3rem; }
-    h1, h2, p { margin: 0; }
-    .page-header p, .controls-panel p, .preview-cta p { color: var(--text-muted); }
-    .header-actions, .toggle-group { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-    .controls-panel, .preview-cta { display: grid; gap: 1rem; }
-    .template-toggle-group { justify-content: flex-start; }
-    .toggle-pill { border: 1px solid var(--border); background: white; color: var(--text); padding: 0.8rem 1rem; border-radius: 999px; font-weight: 700; }
-    .toggle-pill.active { background: var(--primary); color: white; border-color: var(--primary); }
-  `]
+  styleUrl: './template-preview-page.component.scss'
 })
 export class TemplatePreviewPageComponent {
   private readonly route = inject(ActivatedRoute);
@@ -91,7 +82,7 @@ export class TemplatePreviewPageComponent {
   protected readonly profileId = this.route.snapshot.paramMap.get('profileId') ?? 'draft';
   protected templates: TemplateDefinition[] = [];
   protected profile: DraftProfile | null = null;
-  protected selectedTemplateId = (this.route.snapshot.paramMap.get('templateId') ?? 'classic') as PortfolioTemplateId;
+  protected selectedTemplateId = (this.route.snapshot.paramMap.get('templateId') ?? DEFAULT_TEMPLATE_ID) as PortfolioTemplateId;
   protected device: 'desktop' | 'mobile' = 'desktop';
   protected isLoading = true;
   protected loadError: string | null = null;
@@ -111,11 +102,13 @@ export class TemplatePreviewPageComponent {
     }
     localStorage.setItem(this.storageKey(), templateId);
     this.profileApi.updateDraft(this.profileId, { selectedTemplate: templateId }).pipe(
-      catchError(() => of(null)),
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe((updatedProfile) => {
-      if (updatedProfile) {
+    ).subscribe({
+      next: (updatedProfile) => {
         this.profile = updatedProfile;
+      },
+      error: () => {
+        this.loadError = 'We couldn’t save that template selection. Please try again.';
       }
     });
   }
@@ -123,7 +116,7 @@ export class TemplatePreviewPageComponent {
   private loadPreview(): void {
     forkJoin({
       templates: this.profileApi.getTemplates(),
-      profile: this.profileApi.getDraft(this.profileId).pipe(catchError(() => of(this.buildFallbackProfile())))
+      profile: this.profileApi.getDraft(this.profileId)
     }).pipe(
       finalize(() => this.isLoading = false),
       takeUntilDestroyed(this.destroyRef)
@@ -146,41 +139,6 @@ export class TemplatePreviewPageComponent {
   }
 
   private storageKey(): string {
-    return `r2s:selected-template:${this.profileId}`;
-  }
-
-  private buildFallbackProfile(): DraftProfile {
-    return {
-      id: this.profileId,
-      fullName: 'Avery Johnson',
-      headline: 'Frontend developer building polished product experiences',
-      summary: 'Early-career engineer with internship and project experience across Angular, React, and TypeScript. Focused on converting structured content into production-ready UI.',
-      email: 'avery@example.com',
-      phone: '+1 555 010 1010',
-      location: 'Austin, TX',
-      website: 'resume2site.dev/avery',
-      links: [
-        { id: 'github', label: 'GitHub', url: 'https://github.com/avery' },
-        { id: 'linkedin', label: 'LinkedIn', url: 'https://linkedin.com/in/avery' }
-      ],
-      socialLinks: [],
-      skills: ['Angular', 'TypeScript', 'Node.js', 'Design systems', 'REST APIs'],
-      experiences: [
-        {
-          id: 'exp-1', company: 'LaunchPad Labs', role: 'Frontend Intern', location: 'Remote', startDate: '2025-01-01', endDate: '2025-05-01',
-          summary: 'Built reusable UI flows for onboarding and profile editing in a student-focused product.', highlights: ['Reduced UI duplication across core screens', 'Improved first-time-user flow for profile setup']
-        }
-      ],
-      education: [
-        { id: 'edu-1', institution: 'State University', degree: 'B.S.', field: 'Computer Science', startDate: '2022-08-01', endDate: '2026-05-01', score: '3.8 GPA' }
-      ],
-      projects: [
-        { id: 'proj-1', name: 'Resume2Site MVP', description: 'Turned resume uploads into editable portfolio drafts with template-based previews.', technologies: ['Angular', 'TypeScript', 'Node'], link: 'https://example.com' },
-        { id: 'proj-2', name: 'Campus Events App', description: 'Created a mobile-first event discovery app for students.', technologies: ['Firebase', 'React Native'] }
-      ],
-      sectionVisibility: { links: true, skills: true, experiences: true, education: true, projects: true },
-      selectedTemplate: 'classic',
-      status: 'draft'
-    };
+    return `${STORAGE_KEYS.selectedTemplatePrefix}${this.profileId}`;
   }
 }

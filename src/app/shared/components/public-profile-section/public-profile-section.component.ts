@@ -12,11 +12,7 @@ import { Component, Input } from '@angular/core';
       <ng-content></ng-content>
     </section>
   `,
-  styles: [`
-    .public-section { display: grid; gap: 1rem; color: inherit; }
-    h2, p { margin: 0; color: inherit; }
-    p { color: var(--text-muted); }
-  `]
+  styleUrl: './public-profile-section.component.scss'
 })
 export class PublicProfileSectionComponent {
   @Input() title = '';

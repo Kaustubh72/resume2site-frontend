@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { MAX_RESUME_FILE_SIZE_MB } from '../../../core/constants/app.constants';
+import { validateResumeFile } from '../../../core/utils/file.util';
 
 @Component({
   selector: 'r2s-file-upload',
@@ -16,7 +18,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
           <label class="upload__button" for="resume-upload">
             {{ ctaLabel }}
           </label>
-          <span class="upload__hint">No login required. PDF and DOCX only.</span>
+          <span class="upload__hint">No login required. PDF and DOCX only, up to {{ maxResumeFileSizeMb }} MB.</span>
         </div>
 
         <input
@@ -32,25 +34,10 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
       </div>
     </section>
   `,
-  styles: [`
-    .upload { padding: 2rem; border-style: dashed; }
-    .upload--disabled { opacity: 0.8; pointer-events: none; }
-    .upload__content { display: grid; gap: 0.85rem; }
-    .upload h3 { margin: 0; font-size: 1.5rem; }
-    .upload p { margin: 0; color: var(--text-muted); }
-    .upload__actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-top: 0.5rem; }
-    .upload__button {
-      display: inline-flex; align-items: center; justify-content: center;
-      min-height: 48px; padding: 0 1rem; border-radius: 14px; cursor: pointer;
-      background: var(--primary); color: white; font-weight: 700;
-    }
-    .upload__hint { font-size: 0.95rem; }
-    .upload__selected { color: var(--text); font-weight: 600; }
-    .upload__error { color: var(--danger); font-weight: 600; }
-    input { display: none; }
-  `]
+  styleUrl: './file-upload.component.scss'
 })
 export class FileUploadComponent {
+  protected readonly maxResumeFileSizeMb = MAX_RESUME_FILE_SIZE_MB;
   @Input() title = 'Upload your resume';
   @Input() description = 'Generate an editable draft profile and preview your portfolio before sign up.';
   @Input() ctaLabel = 'Upload Resume';
@@ -69,7 +56,7 @@ export class FileUploadComponent {
       return;
     }
 
-    const validationMessage = this.validateFile(file);
+    const validationMessage = validateResumeFile(file);
     if (validationMessage) {
       this.selectedFileName = null;
       input.value = '';
@@ -81,21 +68,4 @@ export class FileUploadComponent {
     this.fileSelected.emit(file);
   }
 
-  private validateFile(file: File): string | null {
-    const fileName = file.name.toLowerCase();
-    const allowedMimeTypes = [
-      'application/pdf',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    ];
-    const isPdf = fileName.endsWith('.pdf');
-    const isDocx = fileName.endsWith('.docx');
-    const hasValidExtension = isPdf || isDocx;
-    const hasValidMimeType = !file.type || allowedMimeTypes.includes(file.type);
-
-    if (!hasValidExtension || !hasValidMimeType) {
-      return 'Please upload a PDF or DOCX resume only.';
-    }
-
-    return null;
-  }
 }

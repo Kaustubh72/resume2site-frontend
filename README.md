@@ -1,34 +1,28 @@
-# Resume2Site Frontend MVP Foundation
+# Resume2Site Frontend
 
-Angular frontend for the Resume2Site MVP: a resume-first flow that lets users upload a resume, generate an editable draft profile, preview portfolio templates before login, and publish to a public route like `/u/:slug`.
+Angular frontend for the Resume2Site MVP: upload a resume without login, generate an editable draft profile, preview one of three templates, authenticate only at publish time, claim a slug, and render the live portfolio at `/u/:slug`.
 
-## What is included
+## Current MVP scope
 
-- Angular standalone-component project structure
-- Feature-based routing for landing, upload, draft editor, templates, auth, publish, dashboard, and public profile pages
-- Anonymous landing-page resume upload flow with client-side PDF/DOCX validation
-- Upload + parse API integration for:
-  - `POST /api/resumes/upload`
-  - `POST /api/resumes/{resumeUploadId}/parse`
-- Shared structured profile model for draft and public portfolio rendering
-- API service layer using `HttpClient`
-- Reusable UI foundation components:
-  - file upload
-  - loading / error / empty states
-  - section editor shell
-  - template card
-  - slug input
-  - public profile section shell
-- Environment config for API base URL
+- Landing page with embedded upload CTA
+- Dedicated upload route with client-side PDF/DOCX validation
+- Draft editor for core profile fields, links, skills, experience, education, and projects
+- Template gallery plus live preview for `classic`, `minimal`, and `spotlight`
+- Publish flow with inline auth, slug validation, availability checks, and success actions
+- Dashboard for editing, template switching, and republishing
+- Public portfolio rendering with loading, unavailable, and not-found states
 
-## Project structure
+## Route overview
 
-```text
-src/app/
-  core/       # app config, models, services, guards, layout
-  features/   # route-level feature pages
-  shared/     # reusable presentation components
-```
+- `/` — landing page + anonymous upload
+- `/upload` — dedicated upload flow
+- `/draft/:profileId` — draft editor
+- `/templates/:profileId` — template gallery
+- `/templates/:profileId/preview/:templateId` — live preview
+- `/auth` — standalone auth route
+- `/publish/:profileId` — publish flow
+- `/dashboard` — authenticated dashboard
+- `/u/:slug` — public portfolio
 
 ## Local setup
 
@@ -36,14 +30,33 @@ src/app/
    ```bash
    npm install
    ```
-2. Run the dev server:
+2. Start the app:
    ```bash
    npm start
    ```
 3. Open `http://localhost:4200`.
 
-## Notes
+## Environment configuration
 
-- Authentication is intentionally not required for the upload and preview steps.
-- Public portfolio pages are intended to be dynamically rendered from API data rather than statically generated.
-- The next recommended implementation step is the **draft editor**.
+- Development API base URL lives in `src/environments/environment.ts` and defaults to `http://localhost:8081/api`.
+- Production builds use `src/environments/environment.prod.ts` and default to `/api`, which works cleanly behind a reverse proxy.
+- Update those files if your backend is hosted elsewhere.
+
+## Backend integration
+
+The frontend expects a backend that supports the MVP flow:
+
+- `POST /resumes/upload`
+- `POST /resumes/{resumeUploadId}/parse`
+- `GET /profiles/{profileId}`
+- `PATCH /profiles/{profileId}`
+- `POST /profiles/{profileId}/publish`
+- `POST /profiles/{profileId}/republish`
+- `GET /profiles`
+- `GET /public/{slug}`
+- `POST /auth/signup`
+- `POST /auth/login`
+- `GET /auth/me`
+- `GET /slugs/check?value=...`
+
+For anonymous draft ownership, the frontend can persist an optional `draftAccessToken` returned by the backend and sends it back as `X-Draft-Access-Token` on draft-related requests.

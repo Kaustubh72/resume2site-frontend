@@ -1,0 +1,16 @@
+    .upload { padding: 2rem; border-style: dashed; }
+    .upload--disabled { opacity: 0.8; pointer-events: none; }
+    .upload__content { display: grid; gap: 0.85rem; }
+    .upload h3 { margin: 0; font-size: 1.5rem; }
+    .upload p { margin: 0; color: var(--text-muted); }
+    .upload__actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-top: 0.5rem; }
+    .upload__button {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 48px; padding: 0 1rem; border-radius: 14px; cursor: pointer;
+      background: var(--primary); color: white; font-weight: 700;
+    }
+    .upload__hint { font-size: 0.95rem; }
+    .upload__selected { color: var(--text); font-weight: 600; }
+    .upload__error { color: var(--danger); font-weight: 600; }
+    input { display: none; }
+  

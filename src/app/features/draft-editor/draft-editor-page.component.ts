@@ -107,6 +107,8 @@ type DraftEditorForm = FormGroup<{
             </div>
           </div>
 
+          <p class="helper-copy">Missing sections are okay for this MVP. Save what you have now, then keep filling the draft in over time.</p>
+
           <div class="field-grid two-column">
             <label class="field">
               <span>Full name</span>
@@ -123,6 +125,7 @@ type DraftEditorForm = FormGroup<{
             <label class="field">
               <span>Email</span>
               <input type="email" formControlName="email" placeholder="name@example.com" />
+              <small class="field-hint" *ngIf="draftForm.controls.email.invalid && draftForm.controls.email.touched">Enter a valid email so the public template can show a working contact point.</small>
             </label>
             <label class="field">
               <span>Phone</span>
@@ -226,6 +229,7 @@ type DraftEditorForm = FormGroup<{
             <p>Save this draft, then move straight into template selection and live preview before login.</p>
             <p class="status-message" *ngIf="saveMessage">{{ saveMessage }}</p>
             <p class="error-message" *ngIf="saveError">{{ saveError }}</p>
+            <p class="helper-copy" *ngIf="draftForm.invalid">A few required fields still need attention before the save button is enabled.</p>
           </div>
           <div class="action-row">
             <button type="submit" class="primary-button" [disabled]="isSaving || draftForm.invalid">
@@ -237,42 +241,7 @@ type DraftEditorForm = FormGroup<{
       </form>
     </section>
   `,
-  styles: [`
-    .draft-page { padding: 1rem 0 3rem; }
-    h1, h2 { margin: 0; letter-spacing: -0.03em; }
-    .page-header p, .overview-copy p, .section-heading p, .section-top p, .status-message, .error-message { color: var(--text-muted); }
-    .page-header p { margin: 0.75rem 0 0; max-width: 60ch; }
-    .overview-card, .meta-stack, .section-heading, .field-grid, .field, .section-top, .tag-list, .empty-state, .sticky-actions { display: grid; gap: 1rem; }
-    .overview-card { grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr); align-items: start; }
-    .meta-stack { gap: 0.85rem; }
-    .meta-stack > div { padding: 1rem; border-radius: 16px; background: #fcfcff; border: 1px solid var(--border); }
-    .meta-label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.35rem; }
-    .field-grid.two-column { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .field { display: grid; gap: 0.45rem; }
-    .field span { font-size: 0.92rem; font-weight: 600; }
-    .field-full { grid-column: 1 / -1; }
-    .section-top { grid-template-columns: minmax(0, 1fr) auto; align-items: start; }
-    .section-title-row { display: flex; gap: 0.75rem; align-items: center; }
-    .section-actions { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
-    .toggle-row { display: inline-flex; gap: 0.5rem; align-items: center; font-weight: 600; color: var(--text-muted); }
-    .tag-list { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-    .skill-chip { display: flex; gap: 0.65rem; align-items: center; border: 1px solid var(--border); border-radius: 16px; padding: 0.75rem; background: #fcfcff; }
-    .skill-chip input { flex: 1; border: 0; background: transparent; padding: 0; }
-    .sticky-actions { grid-template-columns: minmax(0, 1fr) auto; align-items: center; position: sticky; bottom: 1rem; }
-    .action-row { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: flex-end; }
-    .empty-state { padding: 1rem; border: 1px dashed var(--border); border-radius: 16px; }
-    .empty-state p { margin: 0; }
-    .status-message, .error-message { margin: 0; }
-    .status-message { color: var(--success); }
-    .error-message { color: var(--danger); }
-    @media (max-width: 900px) {
-      .overview-card, .sticky-actions, .section-top { grid-template-columns: 1fr; }
-      .action-row, .section-actions { justify-content: flex-start; }
-    }
-    @media (max-width: 768px) {
-      .field-grid.two-column, .tag-list { grid-template-columns: 1fr; }
-    }
-  `]
+  styleUrl: './draft-editor-page.component.scss'
 })
 export class DraftEditorPageComponent {
   private readonly route = inject(ActivatedRoute);

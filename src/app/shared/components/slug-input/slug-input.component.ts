@@ -18,14 +18,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
       </small>
     </label>
   `,
-  styles: [`
-    .slug-field { display: grid; gap: 0.5rem; }
-    .slug-control { display: grid; grid-template-columns: auto 1fr; gap: 0.5rem; align-items: center; padding: 0.85rem 1rem; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
-    input { border: 0; outline: none; background: transparent; }
-    small { color: var(--text-muted); }
-    .available { color: var(--success); }
-    .unavailable { color: var(--danger); }
-  `]
+  styleUrl: './slug-input.component.scss'
 })
 export class SlugInputComponent {
   @Input({ required: true }) control!: FormControl<string | null>;

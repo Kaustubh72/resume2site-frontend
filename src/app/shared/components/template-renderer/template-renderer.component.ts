@@ -15,12 +15,12 @@ import { PublicProfileSectionComponent } from '../public-profile-section/public-
             <section class="template-shell minimal-shell">
               <header class="hero minimal-hero">
                 <div>
-                  <p class="eyebrow">{{ currentProfile.headline }}</p>
-                  <h1>{{ currentProfile.fullName }}</h1>
-                  <p class="lead">{{ currentProfile.summary }}</p>
+                  <p class="eyebrow">{{ displayHeadline(currentProfile) }}</p>
+                  <h1>{{ displayName(currentProfile) }}</h1>
+                  <p class="lead">{{ displaySummary(currentProfile) }}</p>
                 </div>
-                <div class="hero-aside compact-card">
-                  <div><strong>Email</strong><span>{{ currentProfile.email }}</span></div>
+                <div class="hero-aside compact-card" *ngIf="showContactCard(currentProfile)">
+                  <div *ngIf="currentProfile.email"><strong>Email</strong><span>{{ currentProfile.email }}</span></div>
                   <div *ngIf="currentProfile.location"><strong>Location</strong><span>{{ currentProfile.location }}</span></div>
                   <div *ngIf="currentProfile.website"><strong>Website</strong><span>{{ currentProfile.website }}</span></div>
                 </div>
@@ -82,10 +82,10 @@ import { PublicProfileSectionComponent } from '../public-profile-section/public-
               <header class="hero spotlight-hero">
                 <div class="hero-panel accent-panel">
                   <span class="template-kicker">Selected template</span>
-                  <h1>{{ currentProfile.fullName }}</h1>
-                  <p class="lead">{{ currentProfile.headline }}</p>
-                  <p>{{ currentProfile.summary }}</p>
-                  <div class="hero-links">
+                  <h1>{{ displayName(currentProfile) }}</h1>
+                  <p class="lead">{{ displayHeadline(currentProfile) }}</p>
+                  <p>{{ displaySummary(currentProfile) }}</p>
+                  <div class="hero-links" *ngIf="primaryLinks(currentProfile).length">
                     <a *ngFor="let link of primaryLinks(currentProfile)" [href]="link.url" target="_blank" rel="noreferrer">{{ link.label }}</a>
                   </div>
                 </div>
@@ -157,10 +157,10 @@ import { PublicProfileSectionComponent } from '../public-profile-section/public-
               <header class="hero classic-hero">
                 <div>
                   <span class="template-kicker">Portfolio preview</span>
-                  <h1>{{ currentProfile.fullName }}</h1>
-                  <p class="lead">{{ currentProfile.headline }}</p>
+                  <h1>{{ displayName(currentProfile) }}</h1>
+                  <p class="lead">{{ displayHeadline(currentProfile) }}</p>
                 </div>
-                <div class="hero-contact">
+                <div class="hero-contact" *ngIf="showContactCard(currentProfile)">
                   <span>{{ currentProfile.email }}</span>
                   <span *ngIf="currentProfile.phone">{{ currentProfile.phone }}</span>
                   <span *ngIf="currentProfile.location">{{ currentProfile.location }}</span>
@@ -168,7 +168,7 @@ import { PublicProfileSectionComponent } from '../public-profile-section/public-
               </header>
 
               <div class="intro-card compact-card">
-                <p>{{ currentProfile.summary }}</p>
+                <p>{{ displaySummary(currentProfile) }}</p>
                 <div class="link-row" *ngIf="currentProfile.sectionVisibility.links && primaryLinks(currentProfile).length">
                   <a *ngFor="let link of primaryLinks(currentProfile)" [href]="link.url" target="_blank" rel="noreferrer">{{ link.label }}</a>
                 </div>
@@ -222,63 +222,18 @@ import { PublicProfileSectionComponent } from '../public-profile-section/public-
                   </r2s-public-profile-section>
                 </aside>
               </div>
+
+              <section class="compact-card empty-portfolio" *ngIf="!hasVisibleContent(currentProfile)">
+                <h3>Your content will appear here</h3>
+                <p>Add experience, projects, education, skills, or links in the draft editor to make this portfolio more complete.</p>
+              </section>
             </section>
           </ng-container>
         </ng-container>
       </article>
     </ng-container>
   `,
-  styles: [`
-    .preview-canvas { background: #fff; color: #0f172a; border-radius: 28px; overflow: hidden; box-shadow: 0 30px 80px rgba(15, 23, 42, 0.12); margin: 0 auto; }
-    .preview-canvas.desktop { width: min(100%, 980px); min-height: 960px; }
-    .preview-canvas.mobile { width: min(100%, 420px); min-height: 780px; }
-    .template-shell, .content-grid, .main-stack, .sidebar-stack, .timeline-list, .stack-list, .project-grid { display: grid; gap: 1.5rem; }
-    .template-shell { padding: 2rem; }
-    .hero { display: grid; gap: 1.5rem; }
-    .classic-hero, .spotlight-hero { grid-template-columns: minmax(0, 1.5fr) minmax(220px, 0.8fr); align-items: start; }
-    .minimal-hero { grid-template-columns: minmax(0, 1.6fr) minmax(220px, 0.75fr); align-items: stretch; }
-    .eyebrow, .template-kicker, small { color: #64748b; }
-    h1, h3, p { margin: 0; }
-    h1 { font-size: clamp(2rem, 4vw, 3.35rem); line-height: 1.02; letter-spacing: -0.05em; }
-    h3 { font-size: 1.05rem; }
-    .lead { font-size: 1.05rem; color: #334155; }
-    .hero-contact, .hero-aside, .metrics-panel, .link-row, .tag-row, .hero-links { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-    .hero-aside { flex-direction: column; }
-    .hero-aside div { display: grid; gap: 0.2rem; }
-    .hero-contact span, .link-row a, .hero-links a, .tag-row span, .chip-row span { display: inline-flex; align-items: center; padding: 0.55rem 0.85rem; border-radius: 999px; font-weight: 600; }
-    .hero-contact span { background: #eef2ff; color: #3730a3; }
-    .link-row a, .hero-links a { background: #eff6ff; color: #1d4ed8; }
-    .tag-row span, .chip-row span { background: #f8fafc; border: 1px solid #e2e8f0; }
-    .compact-card, .accent-card, .accent-panel, .metrics-panel { border-radius: 24px; padding: 1.25rem; }
-    .compact-card { background: #f8fafc; border: 1px solid #e2e8f0; }
-    .intro-card p { color: #334155; line-height: 1.7; }
-    .classic-grid, .spotlight-grid { grid-template-columns: minmax(0, 1.5fr) minmax(250px, 0.8fr); align-items: start; }
-    .single-column { grid-template-columns: 1fr; }
-    .timeline-item, .project-card { display: grid; gap: 0.8rem; }
-    .timeline-head, .project-topline { display: flex; justify-content: space-between; gap: 1rem; align-items: start; }
-    ul { margin: 0; padding-left: 1rem; color: #475569; }
-    .minimal-shell { background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); }
-    .minimal-hero { padding-bottom: 1rem; border-bottom: 1px solid #e2e8f0; }
-    .classic-shell { background: linear-gradient(180deg, #eef2ff 0%, #ffffff 30%); }
-    .spotlight-shell { background: #0f172a; color: #e2e8f0; }
-    .spotlight-shell .lead, .spotlight-shell p, .spotlight-shell small { color: #cbd5e1; }
-    .accent-panel { background: linear-gradient(135deg, #1d4ed8, #7c3aed); color: white; }
-    .accent-panel p, .accent-panel .lead, .accent-panel .template-kicker { color: rgba(255,255,255,0.92); }
-    .metrics-panel { background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(148, 163, 184, 0.2); display: grid; gap: 1rem; }
-    .metrics-panel div { display: grid; gap: 0.25rem; }
-    .metrics-panel strong { font-size: 2rem; }
-    .accent-card { background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(148, 163, 184, 0.2); }
-    .spotlight-shell .tag-row span { background: rgba(30, 41, 59, 0.85); border-color: rgba(148, 163, 184, 0.22); color: #e2e8f0; }
-    .chip-row { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-    .tall-tags { align-items: flex-start; }
-    @media (max-width: 900px) {
-      .classic-hero, .spotlight-hero, .minimal-hero, .classic-grid, .spotlight-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 640px) {
-      .template-shell { padding: 1.25rem; }
-      .timeline-head, .project-topline { flex-direction: column; }
-    }
-  `]
+  styleUrl: './template-renderer.component.scss'
 })
 export class TemplateRendererComponent {
   @Input({ required: true }) profile!: DraftProfile;
@@ -289,6 +244,32 @@ export class TemplateRendererComponent {
     return [...(profile.links ?? []), ...(profile.socialLinks ?? [])]
       .filter((link) => link.label && link.url)
       .slice(0, 4);
+  }
+
+  protected displayName(profile: DraftProfile): string {
+    return profile.fullName?.trim() || 'Your portfolio';
+  }
+
+  protected displayHeadline(profile: DraftProfile): string {
+    return profile.headline?.trim() || 'Professional profile';
+  }
+
+  protected displaySummary(profile: DraftProfile): string {
+    return profile.summary?.trim() || 'This portfolio is ready for your summary, projects, and experience highlights.';
+  }
+
+  protected showContactCard(profile: DraftProfile): boolean {
+    return Boolean(profile.email || profile.phone || profile.location || profile.website);
+  }
+
+  protected hasVisibleContent(profile: DraftProfile): boolean {
+    return Boolean(
+      (profile.sectionVisibility.skills && profile.skills?.length) ||
+      (profile.sectionVisibility.links && this.primaryLinks(profile).length) ||
+      (profile.sectionVisibility.experiences && profile.experiences?.length) ||
+      (profile.sectionVisibility.education && profile.education?.length) ||
+      (profile.sectionVisibility.projects && profile.projects?.length)
+    );
   }
 
   protected formatDateRange(startDate?: string, endDate?: string): string {

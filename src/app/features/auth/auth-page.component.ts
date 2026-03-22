@@ -48,15 +48,7 @@ import { AuthSessionService } from '../../core/services/auth-session.service';
       </article>
     </section>
   `,
-  styles: [`
-    .auth-card, .auth-form { display: grid; gap: 1rem; }
-    .auth-toggle { display: flex; gap: 0.75rem; }
-    .toggle-pill { border: 1px solid var(--border); background: white; color: var(--text); padding: 0.8rem 1rem; border-radius: 999px; font-weight: 700; }
-    .toggle-pill.active { background: var(--primary); border-color: var(--primary); color: white; }
-    .auth-form label { display: grid; gap: 0.45rem; }
-    input { min-height: 52px; border-radius: 14px; border: 1px solid var(--border); padding: 0 1rem; background: white; }
-    .error-message { color: var(--danger); }
-  `]
+  styleUrl: './auth-page.component.scss'
 })
 export class AuthPageComponent {
   private readonly authApi = inject(AuthApiService);

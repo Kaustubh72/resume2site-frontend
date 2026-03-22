@@ -1,8 +1,9 @@
 import { Injectable, signal } from '@angular/core';
+import { STORAGE_KEYS } from '../constants/app.constants';
 
 @Injectable({ providedIn: 'root' })
 export class AuthSessionService {
-  private readonly storageKey = 'r2s:auth-token';
+  private readonly storageKey = STORAGE_KEYS.authToken;
   private readonly tokenState = signal<string | null>(this.readToken());
 
   readonly token = this.tokenState.asReadonly();

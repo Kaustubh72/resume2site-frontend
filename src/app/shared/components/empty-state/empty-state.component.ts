@@ -9,7 +9,7 @@ import { Component, Input } from '@angular/core';
       <p>{{ message }}</p>
     </div>
   `,
-  styles: [`.state { padding: 1rem 1.25rem; } p { margin: 0.4rem 0 0; color: var(--text-muted); }`]
+  styleUrl: './empty-state.component.scss'
 })
 export class EmptyStateComponent {
   @Input() title = 'Nothing here yet';
