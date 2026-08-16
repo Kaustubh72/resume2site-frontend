@@ -8,6 +8,15 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authSession = inject(AuthSessionService);
   const token = authSession.getToken();
 
+  // Debug: log outgoing request URL and key headers to help diagnose failing auth calls
+  try {
+    // Avoid leaking tokens in prod logs; this is temporary for debugging.
+    const authHeader = req.headers.get('Authorization');
+    const draftHeader = req.headers.get('X-Draft-Token') || req.headers.get('X-Draft-Access-Token');
+    // eslint-disable-next-line no-console
+    console.debug('[auth-interceptor] outgoing', req.method, req.url, { authorizationPresent: !!authHeader, draftHeaderPresent: !!draftHeader });
+  } catch {}
+
   if (!token) {
     return next(req);
   }

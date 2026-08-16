@@ -34,10 +34,15 @@ import { AuthSessionService } from '../../core/services/auth-session.service';
             <input type="email" formControlName="email" placeholder="you@example.com" />
           </label>
 
-          <label>
-            <span>Password</span>
-            <input type="password" formControlName="password" placeholder="Enter your password" />
-          </label>
+            <label *ngIf="mode() === 'signup'">
+              <span>Full name</span>
+              <input type="text" formControlName="fullName" placeholder="Your full name" />
+            </label>
+
+            <label>
+              <span>Password</span>
+              <input type="password" formControlName="password" placeholder="Enter your password" />
+            </label>
 
           <p *ngIf="error()" class="error-message">{{ error() }}</p>
 
@@ -59,7 +64,8 @@ export class AuthPageComponent {
 
   protected readonly form = new FormGroup({
     email: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.email] }),
-    password: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(8)] })
+    password: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(8)] }),
+    fullName: new FormControl('', { nonNullable: true })
   });
   protected readonly mode = signal<'signup' | 'login'>('login');
   protected readonly isSubmitting = signal(false);
@@ -79,9 +85,17 @@ export class AuthPageComponent {
     this.error.set(null);
     this.isSubmitting.set(true);
 
+    const values = this.form.getRawValue();
+
+    if (this.mode() === 'signup' && !values.fullName) {
+      this.error.set('Full name is required when signing up.');
+      this.isSubmitting.set(false);
+      return;
+    }
+
     const request$ = this.mode() === 'signup'
-      ? this.authApi.signup(this.form.getRawValue())
-      : this.authApi.login(this.form.getRawValue());
+      ? this.authApi.signup({ email: values.email, password: values.password, fullName: values.fullName })
+      : this.authApi.login({ email: values.email, password: values.password });
 
     request$.pipe(
       finalize(() => this.isSubmitting.set(false)),

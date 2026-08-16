@@ -4,48 +4,71 @@ export interface ProfileLink {
   id: string;
   label: string;
   url: string;
+  sortOrder?: number;
+}
+
+export interface Skill {
+  id: string;
+  name: string;
+  category?: string;
+  sortOrder?: number;
 }
 
 export interface ExperienceEntry {
   id: string;
   company: string;
-  role: string;
+  title: string;
+  role?: string; // backward compatibility
   location?: string;
   startDate: string;
-  endDate?: string;
-  summary: string;
-  highlights: string[];
+  endDate?: string | null;
+  isCurrent?: boolean;
+  description?: string;
+  summary?: string; // backward compatibility
+  highlights?: string[]; // backward compatibility
+  sortOrder?: number;
 }
 
 export interface EducationEntry {
   id: string;
   institution: string;
   degree: string;
-  field?: string;
+  fieldOfStudy?: string;
+  field?: string; // backward compatibility
   startDate?: string;
   endDate?: string;
-  score?: string;
+  grade?: string;
+  score?: string; // backward compatibility
+  description?: string;
+  sortOrder?: number;
 }
 
 export interface ProjectEntry {
   id: string;
   name: string;
-  description: string;
-  technologies: string[];
-  link?: string;
+  description?: string;
+  projectUrl?: string;
+  link?: string; // backward compatibility
+  repositoryUrl?: string;
+  techStack?: string;
+  technologies?: string[]; // backward compatibility
+  sortOrder?: number;
 }
 
+export interface ProfileSection {
+  sectionKey: string;
+  displayName: string;
+  visible: boolean;
+  sortOrder?: number;
+}
+
+// Backward compatibility
 export interface ProfileSectionVisibility {
   links: boolean;
   skills: boolean;
   experiences: boolean;
   education: boolean;
   projects: boolean;
-}
-
-export interface ProfileSectionState<T> {
-  items: T[];
-  isDirty?: boolean;
 }
 
 export interface ResumeUploadData {
@@ -67,25 +90,29 @@ export interface ResumeParseResponse {
 }
 
 export interface DraftProfile {
-  draftAccessToken?: string;
   id: string;
+  draftToken?: string;
+  draftAccessToken?: string;
   fullName: string;
-  headline: string;
-  summary: string;
-  email: string;
+  headline?: string;
+  summary?: string;
+  email?: string;
   phone?: string;
   location?: string;
-  website?: string;
+  publicationStatus?: 'DRAFT' | 'PUBLISHED';
+  status: 'draft' | 'published'; // backward compatibility - defaults to draft if not set
+  slug?: string;
+  templateId?: string;
+  selectedTemplate: PortfolioTemplateId; // backward compatibility
+  sections?: ProfileSection[];
+  sectionVisibility: ProfileSectionVisibility; // backward compatibility - always available
   links: ProfileLink[];
-  socialLinks?: ProfileLink[];
-  skills: string[];
+  skills: (Skill | string)[]; // accept both Skill objects and strings for backward compatibility
   experiences: ExperienceEntry[];
   education: EducationEntry[];
   projects: ProjectEntry[];
-  sectionVisibility: ProfileSectionVisibility;
-  selectedTemplate: PortfolioTemplateId;
-  slug?: string;
-  status: 'draft' | 'published';
+  website?: string; // backward compatibility - not in API
+  socialLinks?: ProfileLink[]; // backward compatibility - not in API
   updatedAt?: string;
 }
 

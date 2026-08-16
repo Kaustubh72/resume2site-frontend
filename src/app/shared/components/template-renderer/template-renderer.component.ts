@@ -27,7 +27,7 @@ import { PublicProfileSectionComponent } from '../public-profile-section/public-
               </header>
 
               <section class="chip-row" *ngIf="currentProfile.sectionVisibility.skills && currentProfile.skills.length">
-                <span *ngFor="let skill of currentProfile.skills">{{ skill }}</span>
+                <span *ngFor="let skill of currentProfile.skills">{{ typeof skill === 'string' ? skill : skill.name }}</span>
               </section>
 
               <div class="content-grid single-column">
@@ -36,13 +36,13 @@ import { PublicProfileSectionComponent } from '../public-profile-section/public-
                     <article class="timeline-item" *ngFor="let experience of currentProfile.experiences">
                       <div class="timeline-head">
                         <div>
-                          <h3>{{ experience.role }}</h3>
+                          <h3>{{ experience.title || experience.role }}</h3>
                           <p>{{ experience.company }}<span *ngIf="experience.location"> · {{ experience.location }}</span></p>
                         </div>
-                        <span>{{ formatDateRange(experience.startDate, experience.endDate) }}</span>
+                        <span>{{ formatDateRange(experience.startDate, experience.endDate ?? undefined) }}</span>
                       </div>
-                      <p>{{ experience.summary }}</p>
-                      <ul *ngIf="experience.highlights.length">
+                      <p>{{ experience.description || experience.summary }}</p>
+                      <ul *ngIf="(experience.highlights?.length ?? 0) > 0">
                         <li *ngFor="let highlight of experience.highlights">{{ highlight }}</li>
                       </ul>
                     </article>
@@ -54,7 +54,7 @@ import { PublicProfileSectionComponent } from '../public-profile-section/public-
                     <article class="project-card compact-card" *ngFor="let project of currentProfile.projects">
                       <div class="project-topline">
                         <h3>{{ project.name }}</h3>
-                        <a *ngIf="project.link" [href]="project.link" target="_blank" rel="noreferrer">View</a>
+                        <a *ngIf="project.projectUrl || project.link" [href]="project.projectUrl || project.link" target="_blank" rel="noreferrer">View</a>
                       </div>
                       <p>{{ project.description }}</p>
                       <div class="tag-row">
@@ -124,16 +124,16 @@ import { PublicProfileSectionComponent } from '../public-profile-section/public-
                 <div class="sidebar-stack">
                   <r2s-public-profile-section title="Skills" *ngIf="currentProfile.sectionVisibility.skills && currentProfile.skills.length">
                     <div class="tag-row tall-tags">
-                      <span *ngFor="let skill of currentProfile.skills">{{ skill }}</span>
+                      <span *ngFor="let skill of currentProfile.skills">{{ typeof skill === 'string' ? skill : skill.name }}</span>
                     </div>
                   </r2s-public-profile-section>
 
                   <r2s-public-profile-section title="Experience" *ngIf="currentProfile.sectionVisibility.experiences && currentProfile.experiences.length">
                     <div class="stack-list">
                       <article class="compact-card" *ngFor="let experience of currentProfile.experiences">
-                        <h3>{{ experience.role }}</h3>
+                        <h3>{{ experience.title || experience.role }}</h3>
                         <p>{{ experience.company }}</p>
-                        <small>{{ formatDateRange(experience.startDate, experience.endDate) }}</small>
+                        <small>{{ formatDateRange(experience.startDate, experience.endDate ?? undefined) }}</small>
                       </article>
                     </div>
                   </r2s-public-profile-section>
@@ -181,12 +181,12 @@ import { PublicProfileSectionComponent } from '../public-profile-section/public-
                       <article class="timeline-item" *ngFor="let experience of currentProfile.experiences">
                         <div class="timeline-head">
                           <div>
-                            <h3>{{ experience.role }}</h3>
+                            <h3>{{ experience.title || experience.role }}</h3>
                             <p>{{ experience.company }}</p>
                           </div>
-                          <span>{{ formatDateRange(experience.startDate, experience.endDate) }}</span>
+                          <span>{{ formatDateRange(experience.startDate, experience.endDate ?? undefined) }}</span>
                         </div>
-                        <p>{{ experience.summary }}</p>
+                        <p>{{ experience.description || experience.summary }}</p>
                       </article>
                     </div>
                   </r2s-public-profile-section>
@@ -196,7 +196,7 @@ import { PublicProfileSectionComponent } from '../public-profile-section/public-
                       <article class="project-card compact-card" *ngFor="let project of currentProfile.projects">
                         <div class="project-topline">
                           <h3>{{ project.name }}</h3>
-                          <a *ngIf="project.link" [href]="project.link" target="_blank" rel="noreferrer">Visit</a>
+                          <a *ngIf="project.projectUrl || project.link" [href]="project.projectUrl || project.link" target="_blank" rel="noreferrer">Visit</a>
                         </div>
                         <p>{{ project.description }}</p>
                       </article>
@@ -207,7 +207,7 @@ import { PublicProfileSectionComponent } from '../public-profile-section/public-
                 <aside class="sidebar-stack">
                   <r2s-public-profile-section title="Skills" *ngIf="currentProfile.sectionVisibility.skills && currentProfile.skills.length">
                     <div class="tag-row">
-                      <span *ngFor="let skill of currentProfile.skills">{{ skill }}</span>
+                      <span *ngFor="let skill of currentProfile.skills">{{ typeof skill === 'string' ? skill : skill.name }}</span>
                     </div>
                   </r2s-public-profile-section>
 

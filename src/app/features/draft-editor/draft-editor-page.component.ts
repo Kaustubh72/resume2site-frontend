@@ -467,28 +467,28 @@ export class DraftEditorPageComponent {
       experiences: raw.experiences.map((experience) => ({
         id: experience['id'] || this.createId('exp'),
         company: experience['company'] || '',
-        role: experience['role'] || '',
+        title: experience['title'] || experience['role'] || '',
         location: experience['location'] || '',
         startDate: experience['startDate'] || '',
-        endDate: experience['endDate'] || '',
-        summary: experience['summary'] || '',
-        highlights: []
+        endDate: experience['endDate'] ?? null,
+        description: experience['description'] || experience['summary'] || '',
+        highlights: experience['highlights'] || []
       })),
       education: raw.education.map((entry) => ({
         id: entry['id'] || this.createId('edu'),
         institution: entry['institution'] || '',
         degree: entry['degree'] || '',
-        field: entry['field'] || '',
+        fieldOfStudy: entry['fieldOfStudy'] || entry['field'] || '',
         startDate: entry['startDate'] || '',
         endDate: entry['endDate'] || '',
-        score: entry['score'] || ''
+        grade: entry['grade'] || entry['score'] || ''
       })),
       projects: raw.projects.map((project) => ({
         id: project['id'] || this.createId('project'),
         name: project['name'] || '',
         description: project['description'] || '',
-        technologies: this.parseTechnologies(project['technologiesText'] || ''),
-        link: project['link'] || ''
+        techStack: (this.parseTechnologies(project['technologiesText'] || project['techStack'] || '') || []).join(', '),
+        projectUrl: project['projectUrl'] || project['link'] || undefined
       })),
       sectionVisibility: raw.sectionVisibility
     };

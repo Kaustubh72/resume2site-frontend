@@ -98,10 +98,10 @@ export class TemplatePreviewPageComponent {
   protected selectTemplate(templateId: PortfolioTemplateId): void {
     this.selectedTemplateId = templateId;
     if (this.profile) {
-      this.profile = { ...this.profile, selectedTemplate: templateId };
+      this.profile = { ...this.profile, selectedTemplate: templateId, templateId };
     }
     localStorage.setItem(this.storageKey(), templateId);
-    this.profileApi.updateDraft(this.profileId, { selectedTemplate: templateId }).pipe(
+    this.profileApi.updateDraft(this.profileId, { templateId }).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (updatedProfile) => {

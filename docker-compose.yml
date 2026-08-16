@@ -1,0 +1,9 @@
+services:
+  frontend:
+    build: .
+    container_name: resume2site-frontend
+    ports:
+      - "3000:80"
+    environment:
+      API_BASE_URL: http://host.docker.internal:8081
+    restart: unless-stopped

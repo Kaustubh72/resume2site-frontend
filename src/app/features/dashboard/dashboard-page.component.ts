@@ -215,7 +215,7 @@ export class DashboardPageComponent {
     this.clearMessages(profile.id);
     this.updatingTemplateIds.add(profile.id);
 
-    this.profileApi.updateDraft(profile.id, { selectedTemplate: templateId }).pipe(
+    this.profileApi.updateDraft(profile.id, { templateId }).pipe(
       finalize(() => this.updatingTemplateIds.delete(profile.id)),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
@@ -237,7 +237,8 @@ export class DashboardPageComponent {
     this.clearMessages(profile.id);
     this.republishingIds.add(profile.id);
 
-    this.profileApi.publishPortfolio(profile.id, { slug: profile.slug }).pipe(
+    const slug = profile.slug || '';
+    this.profileApi.publishPortfolio(profile.id, { slug }).pipe(
       finalize(() => this.republishingIds.delete(profile.id)),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({

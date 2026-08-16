@@ -267,14 +267,18 @@ export class PublishPageComponent {
     this.publishError.set(null);
     this.isPublishing.set(true);
 
-    this.profileApi.publishPortfolio(this.profileId, { slug: this.slugControl.getRawValue() }).pipe(
+    const profile = this.profile();
+    const slug = this.slugControl.getRawValue();
+
+    // Publish: backend expects only `{ slug }` and the profile must already have `templateId` set
+    this.profileApi.publishPortfolio(this.profileId, { slug }).pipe(
       finalize(() => this.isPublishing.set(false)),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
-      next: ({ slug, publicUrl }) => {
-        this.publishedSlug.set(slug);
+      next: ({ slug: publishedSlug, publicUrl }) => {
+        this.publishedSlug.set(publishedSlug);
         if (publicUrl) {
-          this.publishedSlug.set(publicUrl.split('/u/').pop() ?? slug);
+          this.publishedSlug.set(publicUrl.split('/u/').pop() ?? publishedSlug);
         }
       },
       error: () => {

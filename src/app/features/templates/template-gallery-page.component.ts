@@ -90,16 +90,16 @@ export class TemplateGalleryPageComponent {
   protected selectTemplate(templateId: PortfolioTemplateId): void {
     this.selectedTemplateId = templateId;
     if (this.profile) {
-      this.profile = { ...this.profile, selectedTemplate: templateId };
+      this.profile = { ...this.profile, selectedTemplate: templateId, templateId };
     }
     localStorage.setItem(this.storageKey(), templateId);
 
-    this.profileApi.updateDraft(this.profileId, { selectedTemplate: templateId }).pipe(
+    this.profileApi.updateDraft(this.profileId, { templateId }).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
-      next: (updatedProfile) => {
+        next: (updatedProfile) => {
         this.profile = updatedProfile;
-        this.selectedTemplateId = updatedProfile.selectedTemplate;
+        this.selectedTemplateId = (updatedProfile.templateId ?? updatedProfile.selectedTemplate) as PortfolioTemplateId;
       },
       error: () => {
         this.loadError = 'We couldn’t save that template selection. Please try again.';
@@ -116,10 +116,10 @@ export class TemplateGalleryPageComponent {
       finalize(() => this.isLoading = false),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
-      next: ({ templates, profile }) => {
+        next: ({ templates, profile }) => {
         this.templates = templates;
         this.profile = profile;
-        this.selectedTemplateId = this.resolveSelectedTemplate(profile, templates);
+        this.selectedTemplateId = this.resolveSelectedTemplate(profile, templates) as PortfolioTemplateId;
       },
       error: () => {
         this.loadError = 'Try reloading the page after your draft profile is available.';
